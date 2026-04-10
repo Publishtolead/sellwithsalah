@@ -15,7 +15,7 @@ exports.handler = async function(event) {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  var API_KEY = 'AIzaSyBK1aR4h7vUa82rHFwaHaqORD17dvytLB8';
+  var API_KEY = 'AIzaSyDjObztmgdVQ20Q6WSNPSxJTgMK8Q3-Yrs';
   var BASE = 'https://generativelanguage.googleapis.com/v1beta/models/';
 
   // Models to try in order - confirmed in available list
