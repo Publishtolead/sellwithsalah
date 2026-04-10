@@ -18,14 +18,21 @@ exports.handler = async function(event) {
   try {
     const body = JSON.parse(event.body);
     const userMessage = body.messages[0].content;
-    const systemPrompt = body.system || '';
 
     const API_KEY = 'AIzaSyC1dxkYmlRonXtnC7sO_MUYCqymACHLF8c';
     const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + API_KEY;
 
+    const fullPrompt = `You are a publishing consultant. You MUST reply with ONLY a valid JSON object. No markdown, no backticks, no explanation, no text before or after the JSON. Start your response directly with { and end with }.
+
+${userMessage}`;
+
     const geminiBody = {
-      contents: [{ parts: [{ text: systemPrompt + '\n\n' + userMessage }] }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 2000 }
+      contents: [{ parts: [{ text: fullPrompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 2000,
+        responseMimeType: "application/json"
+      }
     };
 
     const response = await fetch(url, {
@@ -35,6 +42,15 @@ exports.handler = async function(event) {
     });
 
     const data = await response.json();
+
+    if (data.error) {
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        body: JSON.stringify({ error: data.error.message })
+      };
+    }
+
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 
     return {
