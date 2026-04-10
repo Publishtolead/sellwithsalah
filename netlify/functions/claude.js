@@ -19,7 +19,7 @@ exports.handler = async function(event) {
     const body = JSON.parse(event.body);
     const userMessage = body.messages[0].content;
 
-    const API_KEY = 'AIzaSyC1dxkYmlRonXtnC7sO_MUYCqymACHLF8c';
+    const API_KEY = 'AIzaSyBK1aR4h7vUa82rHFwaHaqORD17dvytLB8';
     const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + API_KEY;
 
     const fullPrompt = `You are a publishing consultant. You MUST reply with ONLY a valid JSON object. No markdown, no backticks, no explanation, no text before or after the JSON. Start your response directly with { and end with }.
