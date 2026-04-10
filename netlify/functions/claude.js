@@ -16,32 +16,29 @@ exports.handler = async function(event) {
   }
 
   try {
-    const body = JSON.parse(event.body);
-    const userMessage = body.messages[0].content;
+    var body = JSON.parse(event.body);
+    var userMessage = body.messages[0].content;
 
-    const API_KEY = 'AIzaSyBK1aR4h7vUa82rHFwaHaqORD17dvytLB8';
-const url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=' + API_KEY;
+    var API_KEY = 'AIzaSyBK1aR4h7vUa82rHFwaHaqORD17dvytLB8';
+    var url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=' + API_KEY;
 
-    const fullPrompt = `You are a publishing consultant. You MUST reply with ONLY a valid JSON object. No markdown, no backticks, no explanation, no text before or after the JSON. Start your response directly with { and end with }.
+    var fullPrompt = 'You are a publishing consultant. Reply ONLY with a valid JSON object. No markdown, no backticks, no explanation. Start with { and end with }.\n\n' + userMessage;
 
-${userMessage}`;
-
-    const geminiBody = {
+    var geminiBody = {
       contents: [{ parts: [{ text: fullPrompt }] }],
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 2000,
-        responseMimeType: "application/json"
+        maxOutputTokens: 2000
       }
     };
 
-    const response = await fetch(url, {
+    var response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(geminiBody)
     });
 
-    const data = await response.json();
+    var data = await response.json();
 
     if (data.error) {
       return {
@@ -51,13 +48,17 @@ ${userMessage}`;
       };
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    var text = '';
+    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
+      text = data.candidates[0].content.parts[0].text || '';
+    }
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
       body: JSON.stringify({ content: [{ type: 'text', text: text }] })
     };
+
   } catch (err) {
     return {
       statusCode: 500,
