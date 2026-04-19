@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOP Builder — النسخة المصرية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Cairo',sans-serif;background:#f5f4f0;color:#1a1a1a;direction:rtl}
+.page{max-width:760px;margin:0 auto;padding:1.5rem 1.25rem 4rem}
+/* HEADER */
+.hdr{background:#1a1a1a;border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;color:#fff}
+.hdr-logo{font-size:10px;font-weight:700;letter-spacing:.08em;color:#666;margin-bottom:.25rem}
+.hdr-title{font-size:22px;font-weight:800;color:#fff}
+.hdr-sub{font-size:12px;color:#888;margin-top:2px}
+/* BREADCRUMB */
+.bc{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:12px;color:#888;margin-bottom:1.25rem}
+.bc strong{color:#1a1a1a;font-weight:700}
+.bc-sep{opacity:.35}
+/* BACK */
+.back-btn{background:none;border:none;cursor:pointer;color:#888;font-size:13px;padding:0;margin-bottom:1.25rem;font-family:'Cairo',sans-serif;font-weight:600}
+.back-btn:hover{color:#1a1a1a}
+/* PROGRESS BAR */
+.prog-wrap{background:#fff;border:1px solid #e8e6e0;border-radius:12px;padding:.9rem 1.1rem;margin-bottom:1.25rem}
+.prog-label{font-size:11px;color:#888;font-weight:700;margin-bottom:.6rem;display:flex;justify-content:space-between;align-items:center}
+.prog-label span{font-size:11px;color:#888}
+.prog-sections{display:flex;gap:4px}
+.prog-sec{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;border-radius:8px;padding:4px 2px;transition:background .15s}
+.prog-sec:hover{background:#f5f4f0}
+.prog-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;font-family:-apple-system,sans-serif;transition:all .2s;border:2px solid transparent}
+.prog-dot.empty{background:#f0eeea;color:#bbb;border-color:#e0deda}
+.prog-dot.partial{background:#fff8e0;color:#b8860b;border-color:#f0c040}
+.prog-dot.full{background:#e0f5ec;color:#0a7a4e;border-color:#4caf90}
+.prog-dot.active{box-shadow:0 0 0 3px rgba(21,96,189,.3)}
+.prog-sec-name{font-size:8px;color:#aaa;text-align:center;line-height:1.3}
+/* ROLES */
+.roles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px}
+.role-card{position:relative;padding:.9rem 1.2rem .85rem 1rem;text-align:right;cursor:pointer;background:#fff;border:1px solid #e8e6e0;border-radius:12px;transition:all .15s;overflow:hidden}
+.role-card:hover{border-color:#bbb;background:#fafafa;transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.role-accent{position:absolute;right:0;top:0;bottom:0;width:4px;border-radius:0 12px 12px 0}
+.role-name{font-weight:800;font-size:13px;color:#1a1a1a;margin-bottom:3px;padding-right:10px}
+.role-sub{font-size:11px;color:#888;padding-right:10px;line-height:1.5}
+/* LIST/TASK BTNS */
+.list-btn{width:100%;padding:.85rem 1.25rem;text-align:right;cursor:pointer;background:#fff;border:1px solid #e8e6e0;border-radius:10px;font-size:14px;font-weight:600;color:#1a1a1a;font-family:'Cairo',sans-serif;transition:all .15s;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between}
+.list-btn:hover{background:#fafafa;border-color:#bbb}
+.task-btn{width:100%;padding:.8rem 1.25rem;text-align:right;cursor:pointer;background:#fff;border:1px solid #e8e6e0;border-radius:10px;font-size:13.5px;font-weight:600;color:#1a1a1a;font-family:'Cairo',sans-serif;transition:all .15s;margin-bottom:7px;display:flex;align-items:center;gap:10px;flex-direction:row-reverse}
+.task-btn:hover{background:#fafafa;border-color:#bbb}
+.tdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.other-box{margin-top:6px;border:2px dashed #d0cec8;border-radius:12px;padding:1rem 1.25rem;background:#fafaf8}
+.other-lbl{font-size:12px;color:#888;margin-bottom:8px;font-weight:700}
+.other-row{display:flex;gap:8px;align-items:center;flex-direction:row-reverse}
+.other-inp{flex:1;padding:9px 12px;font-size:13px;background:#fff;border:1px solid #e0deda;border-radius:9px;color:#1a1a1a;font-family:'Cairo',sans-serif;outline:none;text-align:right;direction:rtl}
+/* SECTION EXPLAIN */
+.sec-explain{border-radius:12px;padding:1rem 1.25rem;margin-bottom:1.25rem}
+.sec-ex-top{display:flex;align-items:center;gap:10px;flex-direction:row-reverse;margin-bottom:.6rem}
+.sec-letter{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;flex-shrink:0;font-family:-apple-system,sans-serif}
+.sec-ex-name{font-weight:800;font-size:15px}
+.sec-ex-ename{font-size:10px;color:#888;letter-spacing:.04em;margin-top:1px}
+.sec-ex-text{font-size:12.5px;line-height:1.75;text-align:right;border-top:1px solid rgba(0,0,0,.08);padding-top:.6rem;margin-top:.1rem}
+.sec-count{margin-right:auto;font-size:11px;font-weight:700;padding:3px 10px;border-radius:8px}
+/* AI BANNER */
+.ai-banner{display:flex;align-items:center;gap:8px;flex-direction:row-reverse;background:#f0f8ff;border:1px solid #b8d8f8;border-radius:10px;padding:.6rem 1rem;margin-bottom:1rem;font-size:12px;color:#1560BD}
+.ai-banner.loading{background:#fffbf0;border-color:#f0d878;color:#8a6800}
+.ai-banner.done{background:#f0faf5;border-color:#90d8b8;color:#0a6840}
+.ai-icon{font-size:16px;flex-shrink:0}
+/* FIELD */
+.field-block{background:#fff;border:1px solid #e8e6e0;border-radius:12px;overflow:hidden;margin-bottom:.9rem}
+.field-hdr{padding:.85rem 1.1rem .65rem;border-bottom:1px solid #f0eeea}
+.field-q{font-size:13.5px;font-weight:800;color:#1a1a1a;margin-bottom:5px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;flex-direction:row-reverse;justify-content:flex-start}
+.field-hint{font-size:11.5px;color:#888;line-height:1.65;text-align:right}
+.field-body{padding:.85rem 1.1rem}
+.filled-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:8px}
+/* OPTIONS */
+.opts-list{display:flex;flex-direction:column;gap:5px;margin-bottom:.75rem}
+.opt{display:flex;align-items:center;gap:10px;padding:9px 13px;cursor:pointer;background:#fafaf8;border:1.5px solid #e8e6e0;border-radius:9px;transition:all .15s;font-size:13px;font-weight:500;color:#1a1a1a;font-family:'Cairo',sans-serif;text-align:right;width:100%;flex-direction:row-reverse}
+.opt:hover{border-color:#bbb;background:#f5f4f0}
+.opt.sel{border-width:2px}
+.opt-radio{width:18px;height:18px;border-radius:50%;border:2px solid #ccc;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.opt-radio .dot{width:8px;height:8px;border-radius:50%;background:white;display:none}
+.opt.sel .opt-radio .dot{display:block}
+.cust-div{display:flex;align-items:center;gap:8px;margin:2px 0 7px;font-size:11px;color:#bbb;font-weight:600}
+.cust-div::before,.cust-div::after{content:'';flex:1;height:1px;background:#e8e6e0}
+.cust-in{width:100%;padding:9px 12px;font-size:13px;background:#fafaf8;border:1.5px solid #e8e6e0;border-radius:9px;color:#1a1a1a;font-family:'Cairo',sans-serif;outline:none;text-align:right;direction:rtl}
+.cust-in:focus{border-color:#aaa;background:#fff}
+.cust-in.filled{border-color:#bbb;background:#fff}
+/* NAV */
+.nav-row{display:flex;gap:10px;margin-top:1.5rem;flex-direction:row-reverse}
+.btn-back-s{flex:1;padding:.8rem;cursor:pointer;background:#fff;border:1px solid #e0deda;border-radius:10px;font-size:14px;font-weight:600;color:#555;font-family:'Cairo',sans-serif}
+.btn-next{flex:2;padding:.8rem;cursor:pointer;border:none;border-radius:10px;font-size:14px;font-weight:800;color:#fff;font-family:'Cairo',sans-serif}
+/* MISSING */
+.missing-wrap{background:#fff;border:1px solid #f0c0c0;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.missing-title{font-size:15px;font-weight:800;color:#9e2222;margin-bottom:.75rem;display:flex;align-items:center;gap:8px;flex-direction:row-reverse}
+.missing-item{display:flex;align-items:center;justify-content:space-between;padding:.6rem .75rem;background:#fdf5f5;border-radius:8px;margin-bottom:6px;flex-direction:row-reverse}
+.missing-item-text{font-size:12.5px;color:#555;text-align:right}
+.missing-item-btn{font-size:11px;font-weight:700;color:#9e2222;background:none;border:1px solid #f0c0c0;border-radius:6px;padding:3px 10px;cursor:pointer;font-family:'Cairo',sans-serif;white-space:nowrap}
+.missing-note{font-size:12px;color:#888;margin-top:.75rem;text-align:right}
+.btn-preview-anyway{width:100%;padding:.75rem;cursor:pointer;background:#f5f4f0;border:1px solid #e0deda;border-radius:10px;font-size:13px;font-weight:600;color:#888;font-family:'Cairo',sans-serif;margin-top:.5rem}
+/* PREVIEW */
+.preview-bar{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.25rem;background:#fff;border-radius:12px;border:1px solid #e8e6e0;margin-bottom:.75rem;flex-direction:row-reverse}
+.preview-bar h2{font-size:15px;font-weight:800;margin-bottom:2px}
+.preview-bar p{font-size:12px;color:#888}
+.btn-print{padding:.65rem 1.5rem;cursor:pointer;border:none;border-radius:9px;font-size:14px;font-weight:800;color:#fff;font-family:'Cairo',sans-serif}
+.btn-edit-last{background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;color:#888;font-family:'Cairo',sans-serif}
+.ptbl{width:100%;border-collapse:collapse;direction:rtl}
+.ptbl th{padding:7px 11px;background:#f5f4f0;font-weight:800;text-align:right;font-size:10px;color:#888;border-bottom:1px solid #e8e6e0}
+.ptbl td{padding:7px 11px;border-bottom:1px solid #f0eeea;vertical-align:top}
+.ptbl tr:last-child td{border-bottom:none}
+.ptbl .lc{text-align:center;font-size:18px;font-weight:900;border-left:1px solid #f0eeea;width:34px;font-family:-apple-system,sans-serif}
+.ptbl .nc{font-weight:700;font-size:11px;color:#555;border-left:1px solid #f0eeea;width:105px;background:#fafaf8;text-align:right}
+.ptbl .empty-row td{background:#fffaf5}
+.ql{font-size:10px;color:#aaa;margin-bottom:3px;text-align:right}
+.atag{display:inline-block;padding:3px 10px;border-radius:9px;font-size:12px;font-weight:700;margin:2px 0 2px 4px}
+.aempty{color:#e0a0a0;font-size:11px;font-style:italic}
+.step-label{font-size:13px;color:#888;margin-bottom:1.25rem;font-weight:600}
+@media print{.no-print{display:none!important}body{background:#fff}.ptbl td,.ptbl th{border-color:#ddd!important}.ptbl .nc{background:#f5f5f5!important}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="hdr">
+    <div class="hdr-logo">SOP BUILDER — نسخة السوق المصري</div>
+    <div class="hdr-title">نموذج S.T.A.N.D.A.R.D.</div>
+    <div class="hdr-sub">لتوثيق إجراءات التشغيل المعيارية باحترافية</div>
+  </div>
+  <div id="app"></div>
+</div>
+<script>
+const ROLES=[
+  {id:'sales',color:'#1560BD',label:'مبيعات',sub:'إغلاق صفقات، استقطاب، متابعة',contexts:[
+    {id:'realestate',label:'عقارات',tasks:['عملية تأهيل العملاء المحتملين','إجراء معاينة العقار','تقديم العرض والتفاوض','متابعة العميل بعد المعاينة','إتمام البيع والتسليم']},
+    {id:'medrep',label:'مندوب طبي / دوائي',tasks:['زيارة الطبيب وتقديم المنتج','توزيع العينات الطبية','تخطيط مسار الزيارات','تقديم العرض العلمي','إدارة طلبات وإعادة التخزين']},
+    {id:'b2b',label:'مبيعات للشركات (B2B)',tasks:['التواصل مع العملاء المحتملين','اجتماع الاكتشاف والعرض','تقديم العرض المالي','التفاوض وإغلاق العقد','متابعة تجديد الاشتراك']},
+    {id:'retail',label:'بيع بالتجزئة / نقطة بيع',tasks:['استقبال العميل وفهم احتياجاته','توصية المنتج المناسب','عملية البيع الإضافي','إتمام الدفع والتسليم','الاستبدال والاسترجاع']},
+    {id:'insurance',label:'تأمين',tasks:['استقبال وتأهيل العميل','تقديم الوثيقة والشرح','إصدار عرض أسعار','التعامل مع الاعتراضات','تجديد الوثيقة']},
+    {id:'auto',label:'معارض سيارات',tasks:['استقبال الزبون في المعرض','جولة الاختبار (Test Drive)','التمويل والتأجير','تقييم السيارة المستعملة','تسليم السيارة']},
+    {id:'fmcg',label:'سلع استهلاكية (FMCG)',tasks:['تغطية نقاط البيع اليومية','مفاوضة التوزيع والرف','إدارة الترويج والعروض','تحصيل المستحقات','متابعة مخزون العميل']},
+    {id:'telecom',label:'اتصالات',tasks:['بيع خطط الاشتراك الجديدة','ترقية الباقة للعميل','تجديد العقود','بيع الأجهزة والملحقات','استرداد العملاء المنسحبين']},
+  ]},
+  {id:'operations',color:'#0a7a4e',label:'عمليات',sub:'تشغيل، لوجستيات، تنفيذ',contexts:[
+    {id:'mfg',label:'تصنيع',tasks:['تشغيل خط الإنتاج','فحص الجودة أثناء الإنتاج','صيانة الآلات','تسليم الورديات','تجديد المواد الخام']},
+    {id:'logistics_ops',label:'لوجستيات وتوصيل',tasks:['إرسال وتوزيع الطلبات','توصيل الشحنات للعملاء','الإرجاع والاستلام','استلام البضاعة بالمخزن','إحاطة السائقين']},
+    {id:'restaurant_ops',label:'مطاعم وكافيهات',tasks:['إجراءات فتح الفرع يومياً','تحضير وتجهيز الطعام','تنفيذ الطلبات وتسليمها','إجراءات الإغلاق','إحاطة فريق العمل']},
+    {id:'ecom_ops',label:'تجارة إلكترونية',tasks:['تنفيذ الطلبيات وشحنها','إدارة المخزون','الاسترجاع واسترداد المبلغ','التنسيق مع شركات الشحن','الطلبيات التالفة']},
+    {id:'construct',label:'مقاولات وبناء',tasks:['إحاطة السلامة في الموقع','تقرير سير العمل اليومي','طلب مواد البناء','تنسيق المقاولين','تسليم المشروع']},
+  ]},
+  {id:'hr',color:'#6b3fa0',label:'موارد بشرية',sub:'توظيف، تأهيل، ثقافة',contexts:[
+    {id:'corp_hr',label:'شركات كبرى',tasks:['نشر الوظيفة والبحث','إجراء المقابلات والاختيار','تأهيل الموظف الجديد','إنهاء الخدمة والخروج','تقييم الأداء السنوي']},
+    {id:'factory_hr',label:'مصانع وشركات صناعية',tasks:['توظيف عمال الإنتاج','التحقق من الشهادات','تأهيل العمال الجدد','جدولة الورديات','تسجيل الغياب والجزاءات']},
+    {id:'startup_hr',label:'شركات ناشئة',tasks:['توظيف سريع','عرض العمل وعقد التوظيف','تأهيل عن بُعد','جلسة تقييم ثقافي','إدارة النزاعات']},
+    {id:'agency_hr',label:'مكاتب توظيف',tasks:['استقطاب المرشحين','فرز السيرة الذاتية','التنسيق مع الشركات','إتمام الإحالة والتعيين','متابعة المرشح بعد التعيين']},
+  ]},
+  {id:'marketing',color:'#b84a1a',label:'تسويق',sub:'حملات، محتوى، عملاء',contexts:[
+    {id:'agency_mkt',label:'وكالة إعلانية / رقمية',tasks:['تأهيل العميل الجديد','استلام وتحليل البريف','اعتماد المحتوى والتصاميم','التقرير الشهري للعميل','إنهاء التعاقد']},
+    {id:'brand_mkt',label:'براند / تجارة إلكترونية',tasks:['إطلاق حملة منتج جديد','إدارة الإعلانات المدفوعة','إعداد Email Campaign','إدارة المؤثرين','تخطيط عروض المواسم']},
+    {id:'events_mkt',label:'فعاليات وتنشيط',tasks:['تخطيط الفعالية','حجز القاعة والموردين','تنفيذ الفعالية','تقرير ما بعد الفعالية','إدارة الرعاة']},
+    {id:'social_content',label:'سوشيال ميديا',tasks:['تقويم المحتوى الشهري','إعداد واعتماد المنشور','إدارة التعليقات','الإعلانات المعززة','التقرير الشهري']},
+  ]},
+  {id:'cs',color:'#8a4200',label:'خدمة العملاء',sub:'دعم، شكاوى، استبقاء',contexts:[
+    {id:'ecom_cs',label:'تجارة إلكترونية',tasks:['الرد على استفسارات الطلبيات','الإرجاع واسترداد المبلغ','تصعيد الشكاوى','التعامل مع Chargeback','متابعة ما بعد الشراء']},
+    {id:'telecom_cs',label:'اتصالات وإنترنت',tasks:['الدعم الفني','توصيل خط جديد','اعتراضات الفاتورة','تصعيد للفريق الميداني','الاحتفاظ بالعميل المنسحب']},
+    {id:'bank_cs',label:'بنوك ومؤسسات مالية',tasks:['فتح حساب جديد','اعتراض على معاملة','استفسار عن قرض','بطاقة مسروقة أو مفقودة','التحقق من هوية العميل']},
+    {id:'hotel_cs',label:'فنادق وضيافة',tasks:['تسجيل وصول الضيف','التعامل مع شكوى الضيف','خدمة الغرف والطلبات','تسجيل المغادرة','الحصول على تقييم الضيف']},
+  ]},
+  {id:'finance',color:'#1a6b2e',label:'مالية ومحاسبة',sub:'تقارير، فواتير، امتثال',contexts:[
+    {id:'corp_fin',label:'شركات كبرى',tasks:['إقفال الشهر المحاسبي','اعتماد طلبات الصرف','معالجة الفواتير','إعداد الموازنة','التحضير للمراجعة الخارجية']},
+    {id:'acc_firm',label:'مكتب محاسبة',tasks:['تأهيل عميل جديد','إعداد الإقرار الضريبي','مراجعة دفاتر الحسابات','إعداد القوائم المالية','التقرير الدوري للعميل']},
+    {id:'startup_fin',label:'شركات ناشئة وصغيرة',tasks:['إدارة الصندوق النثري','تشغيل كشف المرتبات','تقرير المستثمرين','متابعة السيولة','الإقرار الضريبي']},
+  ]},
+  {id:'legal',color:'#9e2222',label:'قانوني',sub:'عقود، امتثال، عملاء',contexts:[
+    {id:'lawfirm',label:'مكتب محاماة',tasks:['استقبال العميل وتأهيل القضية','صياغة العقود','تقديم مستندات للمحكمة','إدارة ملفات القضايا','إعداد الفواتير']},
+    {id:'corp_legal',label:'قانوني داخلي (شركات)',tasks:['مراجعة اتفاقيات NDA','التدقيق في الالتزام التنظيمي','التعاقد مع الموردين','حماية الملكية الفكرية','إجراءات التسوية']},
+    {id:'realestate_legal',label:'قانوني عقارات',tasks:['فحص سجل الملكية','مراجعة عقود البيع','التحقق من التراخيص','وثائق التسجيل العقاري','فض النزاعات']},
+  ]},
+  {id:'publishing',color:'#4a3a9e',label:'نشر ومحتوى',sub:'كتب، إعلام، تحرير',contexts:[
+    {id:'book_pub',label:'دور النشر والكتب',tasks:['مراجعة المخطوطة وتقييمها','تأهيل المؤلف وبدء المشروع','التصميم والإخراج الفني','التحضير للطباعة','الإطلاق والتوزيع']},
+    {id:'dig_media',label:'محتوى رقمي وإعلام',tasks:['نشر المقالات والتقارير','إنتاج المحتوى المرئي','إدارة تقويم المحتوى','النشرة البريدية','إدارة الشراكات']},
+    {id:'podcast',label:'بودكاست ومحتوى صوتي',tasks:['تخطيط الحلقات','جلسة التسجيل','المونتاج والإنتاج','النشر على المنصات','استضافة الضيوف']},
+  ]},
+  {id:'realestate_role',color:'#8a4200',label:'عقارات',sub:'بيع، تأجير، إدارة',contexts:[
+    {id:'re_agent',label:'وسيط / وكيل عقاري',tasks:['استلام قائمة العقار','معاينة العقار للعميل','تقديم وتفاوض العرض','التفاوض النهائي','التوقيع والتسليم']},
+    {id:'developer',label:'مطور عقاري',tasks:['دراسة جدوى المشروع','مناقصة المقاولين','إطلاق مبيعات الوحدات','تسليم الوحدة للمشتري','إدارة مراحل الإنشاء']},
+    {id:'property_mgmt',label:'إدارة عقارات',tasks:['تأهيل المستأجر الجديد','تحصيل الإيجار الشهري','طلبات الصيانة','تجديد عقد الإيجار','إنهاء الإقامة والإخلاء']},
+  ]},
+  {id:'healthcare',color:'#9e2222',label:'صحة وطب',sub:'مرضى، عيادات، رعاية',contexts:[
+    {id:'clinic',label:'عيادات خاصة',tasks:['تسجيل المريض الجديد','حجز وتأكيد المواعيد','الكشف والتشخيص','إصدار الروشتة والتقارير','المتابعة بعد الزيارة']},
+    {id:'hospital',label:'مستشفيات',tasks:['استقبال وقبول المريض','تسليم الورديات','التحضير للعمليات','الخروج والتحويل','تحديث الملف الطبي']},
+    {id:'pharmacy',label:'صيدليات',tasks:['التحقق من الروشتة','صرف الدواء','إدارة مخزون الأدوية','مطالبة التأمين','إرشاد المريض']},
+  ]},
+  {id:'logistics_role',color:'#1a6b2e',label:'لوجستيات وسلسلة إمداد',sub:'مخازن، شحن، مشتريات',contexts:[
+    {id:'warehouse',label:'مخازن وتخزين',tasks:['استلام البضاعة الواردة','التجميع والتغليف','شحن وإرسال الطلبيات','جرد المخزون','فحص المرتجعات']},
+    {id:'freight',label:'شحن وبريد',tasks:['حجز الشحنة ومتابعتها','التخليص الجمركي','تتبع حالة الشحنة','الشحنات التالفة','تأكيد التسليم']},
+    {id:'procurement',label:'مشتريات وتوريد',tasks:['طلب الشراء والاعتماد','تقييم الموردين','إصدار طلب العرض','إصدار أمر الشراء','استلام البضاعة ومطابقة الفاتورة']},
+  ]},
+  {id:'it',color:'#1560BD',label:'تكنولوجيا وIT',sub:'تطوير، دعم، بنية تحتية',contexts:[
+    {id:'dev_it',label:'تطوير برمجيات',tasks:['من طلب الميزة للنشر','مراجعة الكود (Code Review)','تتبع الأخطاء وإصلاحها','تخطيط السبرنت','إصدار النسخة والاختبار']},
+    {id:'itsupport',label:'دعم تقني وهيلب ديسك',tasks:['استقبال التذكرة وتصنيفها','إعداد الأجهزة للموظف','حل مشكلة الشبكة','إعادة تعيين كلمات المرور','تثبيت البرامج']},
+  ]},
+  {id:'admin',color:'#444',label:'إدارة ومساعدة تنفيذية',sub:'تنسيق، جدولة، مكتب',contexts:[
+    {id:'exec_support',label:'مساعد تنفيذي',tasks:['إدارة تقويم المدير','ترتيب السفر والإقامة','التحضير للاجتماعات','إدارة المراسلات','إدارة الوثائق السرية']},
+    {id:'office_admin',label:'إدارة مكتبية',tasks:['استقبال الزوار','إدارة المستلزمات المكتبية','صيانة المكتب','متابعة الحضور والانصراف','حفظ وأرشفة الملفات']},
+  ]},
+  {id:'restaurant_mgmt',color:'#8a4200',label:'إدارة مطاعم',sub:'صالة، مطبخ، خدمة',contexts:[
+    {id:'fine_dining',label:'مطاعم فاخرة',tasks:['الحجز والاستقبال','إحاطة الفريق على القائمة','معايير الخدمة','شكوى الضيف','مراجعة إيرادات اليوم']},
+    {id:'casual_dining',label:'كافيه وكاجوال',tasks:['قائمة فتح الفرع','استلام وتنفيذ الطلبات','فحص سلامة الغذاء','إحاطة الفريق','إجراءات الإغلاق']},
+    {id:'catering',label:'كاترينج وفعاليات',tasks:['طلب الفعالية وتحديد السعر','تخطيط القائمة والتحضير','إعداد الموقع','تنفيذ الخدمة','المراجعة وإغلاق الفعالية']},
+  ]},
+  {id:'education',color:'#0a7a4e',label:'تعليم وتدريب',sub:'تعليم، تطوير، تدريب',contexts:[
+    {id:'school_edu',label:'مدارس وتعليم',tasks:['تسجيل الطالب الجديد','تخطيط الحصة والمنهج','التواصل مع أولياء الأمور','إدارة الامتحانات','التعامل مع المخالفات']},
+    {id:'corp_training',label:'تدريب الشركات',tasks:['تحديد الاحتياجات التدريبية','تنفيذ ورشة العمل','رفع المحتوى على LMS','اعتماد المدرب','تقييم ما بعد التدريب']},
+  ]},
+];
+
+const SECTIONS=[
+  {
+    letter:'S',name:'النطاق',ename:'Scope',color:'#1560BD',bg:'#e8f0fc',
+    explain:'النطاق بيحدد "الإطار" بتاع الـ SOP ده - إيه اللي داخل في الشغل ده وإيه اللي مش داخل. لو مش حددت النطاق صح، الناس هتعمل حاجات مش المفروض يعملوها أو هتفوّت حاجات مهمة.',
+    fields:[
+      {key:'s_task',q:'ما هي المهمة؟',hint:'اكتب اسم المهمة بشكل محدد - مش "خدمة عملاء" لكن "الرد على شكوى العميل عبر الواتساب". التحديد بيمنع اللخبطة.'},
+      {key:'s_start',q:'من أين تبدأ؟',hint:'أول لحظة بتبدأ فيها تنفذ الإجراء ده - إيه الحدث اللي بيخليك تبدأ؟ لازم يكون واضح للكل مش بس ليك.'},
+      {key:'s_end',q:'أين تنتهي؟',hint:'امتى بتعرف إن الموضوع خلص بالظبط؟ من غير تحديد نهاية، الشغل بيفضل مفتوح ومفيش حد بيحس إنه أنجز حاجة.'},
+      {key:'s_included',q:'ماذا يشمل النطاق؟',hint:'إيه الأنشطة والخطوات اللي جوّا الـ SOP ده؟ كن صريح عشان مفيش لبس على مين بيعمل إيه.'},
+      {key:'s_excluded',q:'ماذا لا يشمل النطاق؟',hint:'مهم جداً! إيه اللي مش من مسؤوليتك هنا؟ ده بيمنع الخلافات على "مين مسؤول". لو مش كتبته صراحة، هيبقى في خلافات.'},
+    ]
+  },
+  {
+    letter:'T',name:'المُشغِّل',ename:'Trigger',color:'#0a7a4e',bg:'#e0f5ec',
+    explain:'المشغّل هو "الزناد" اللي بيطلق الإجراء - إيه اللي بيحصل وبيخليك تبدأ؟ من غير مشغّل واضح، الموظفين مش هيعرفوا امتى يبدأوا.',
+    fields:[
+      {key:'t_starts',q:'ما الذي يُطلق هذا الإجراء؟',hint:'إيه الحدث أو الموقف اللي بيجبرك تبدأ الإجراء ده فوراً؟ لازم يكون حدث واضح ومحدد.'},
+      {key:'t_signal',q:'ما الإشارة أو المدخل الذي ينشّطه؟',hint:'إيه الإشعار أو الرسالة اللي بتعرف منه إن الإجراء ده محتاج يتنفذ دلوقتي؟ (رسالة واتساب، إشعار نظام، إيميل...)'},
+    ]
+  },
+  {
+    letter:'A',name:'الهدف',ename:'Aim',color:'#b84a1a',bg:'#fbeee6',
+    explain:'الهدف بيجاوب على سؤال "ليه موجود الإجراء ده أصلاً؟" لما الفريق يفهم الهدف بيتعامل مع الاستثناءات بذكاء ومش بيحتاج يسأل في كل حاجة.',
+    fields:[
+      {key:'a_why',q:'لماذا يوجد هذا الإجراء؟',hint:'لو حذفت الـ SOP ده، إيه اللي هيحصل؟ الإجابة دي هي الهدف. فكّر في المشكلة اللي بتحلها.'},
+      {key:'a_outcome',q:'ما النتيجة التجارية المستهدفة؟',hint:'إيه النتيجة المحسوسة اللي الشركة عايزاها؟ ممكن تكون رقم، نسبة، رضا عميل - حاجة قابلة للقياس.'},
+    ]
+  },
+  {
+    letter:'N',name:'المسؤول المحدد',ename:'Named Owner',color:'#6b3fa0',bg:'#f0eaf8',
+    explain:'ده الجزء اللي بيحدد "مين بيعمل إيه" بالاسم والدور - مش "الفريق" أو "الإدارة". من غير وضوح في المسؤوليات، الشغل بيتأخر والناس بتتحجج ببعض.',
+    fields:[
+      {key:'n_accountable',q:'من المسؤول عن الإجراء كاملاً؟',hint:'الشخص اللي هيُسأل لو الإجراء اتنفذ غلط - حتى لو مش هو اللي بينفذه بنفسه. واحد بس مش تيم كامل.'},
+      {key:'n_executes',q:'من يُنفِّذ / يقوم بالعمل؟',hint:'مين اللي بيعمل الشغل الفعلي يومياً؟ ده ممكن يكون غير الشخص المسؤول تماماً.'},
+      {key:'n_approves',q:'من يُعتمِد أو يُوقِّع؟',hint:'مين لازم يوافق قبل ما الإجراء يكتمل؟ من غير اعتماد واضح، الشغل بيوقف أو بيمشي بدون رقابة.'},
+      {key:'n_informed',q:'من يجب إبلاغه ومتابعته؟',hint:'مين لازم يكون عارف إن الإجراء ده اتنفذ - حتى لو مش محتاج يعمل حاجة؟'},
+    ]
+  },
+  {
+    letter:'D',name:'الخطوات التفصيلية',ename:'Detailed Steps',color:'#1a6b2e',bg:'#e4f5e8',
+    explain:'ده "قلب" الـ SOP. كتابة الخطوات بشكل تسلسلي واضح بيضمن إن أي موظف جديد يقدر ينفذ الإجراء من غير ما يحتاج يسأل. ده بيوفر وقت الأسئلة المكررة.',
+    fields:[
+      {key:'d_steps',q:'ما الخطوات الرئيسية بالترتيب؟',hint:'اكتب الخطوات من ١ لآخر خطوة. استخدم: "١. استلم الطلب ← ٢. تحقق من البيانات ← ٣. نفّذ...". الترتيب مهم جداً.'},
+      {key:'d_tools',q:'ما الأدوات والأنظمة المستخدمة؟',hint:'إيه البرامج أو التطبيقات أو الأوراق اللي محتاجها؟ ده بيساعد في التدريب وفي حل مشاكل الوصول.'},
+      {key:'d_output',q:'ما المخرج أو الناتج النهائي؟',hint:'إيه التسليم (Deliverable) اللي المفروض يكون موجود لما الإجراء يخلص؟ (تقرير، طلب مكتمل، موافقة...)'},
+    ]
+  },
+  {
+    letter:'A',name:'معايير القبول',ename:'Acceptance Criteria',color:'#8a4200',bg:'#faeee0',
+    explain:'معايير القبول بتجاوب على "إزاي نعرف إن الإجراء اتنفذ صح؟" ده بيمنع الخلافات على تعريف "الشغل الكويس". من غير معايير قبول، كل حد عنده تعريف مختلف لـ "خلص".',
+    fields:[
+      {key:'ac_done',q:'كيف يبدو الإنجاز الصحيح؟',hint:'لو حد من بره شاف النتيجة، إيه اللي هيبص عليه ويقول "آه ده اتعمل صح"؟'},
+      {key:'ac_completion',q:'ما الذي يُعرَّف اكتمال الإجراء؟',hint:'إيه الحدث اللي لما يحصل تقدر تقول رسمياً إن الموضوع "خلص"؟ لازم يكون حاجة ملموسة.'},
+      {key:'ac_mustbe',q:'ما الذي يجب أن يكون صحيحاً دائماً؟',hint:'إيه الشروط اللي لازم تكون موجودة في كل مرة بدون استثناء؟ ده زي الـ Non-negotiables.'},
+    ]
+  },
+  {
+    letter:'R',name:'المخاطر والتصعيد',ename:'Risks & Escalation',color:'#9e2222',bg:'#fce8e8',
+    explain:'مهما كان الإجراء محكم، في حاجات بتحصل خارج المتوقع. الجزء ده بيحضّر الفريق مسبقاً لأكتر المشاكل شيوعاً ويحدد امتى ومين يتصلوا بيه.',
+    fields:[
+      {key:'r_wrong',q:'ما الذي قد يسوء؟',hint:'فكّر في أكتر ٣-٤ مشاكل ممكن تحصل وبتعطل الإجراء. مش تخوف نظري - حاجات بتحصل فعلاً.'},
+      {key:'r_exceptions',q:'ما الحالات الاستثنائية الشائعة؟',hint:'إيه الحالات "غير العادية" اللي بتحصل بانتظام وبتحتاج معاملة مختلفة؟'},
+      {key:'r_when',q:'متى يجب التصعيد؟',hint:'إيه الموقف اللي لما يحصل تعرف إنك محتاج تتصل بحد أعلى؟ التصعيد في الوقت الصح شجاعة.'},
+      {key:'r_whom',q:'لمن يتم التصعيد؟',hint:'اسم أو مسمى الشخص اللي بتتواصل معاه لما محتاج مساعدة. لازم يكون محدد مش "الإدارة".'},
+    ]
+  },
+  {
+    letter:'D',name:'التوثيق والمراجعة',ename:'Documentation & Review',color:'#444',bg:'#f0efeb',
+    explain:'الـ SOP مش ورقة بتتكتب مرة وتتحط في الدرج. الجزء ده بيحدد إزاي الشغل هيتوثق في كل مرة وامتى الـ SOP نفسه محتاج يتحدث.',
+    fields:[
+      {key:'doc_what',q:'ماذا يجب توثيقه بعد كل تنفيذ؟',hint:'إيه المعلومات اللي لازم تتسجل بعد كل مرة بتنفذ الإجراء؟ لو حصلت مشكلة بكرة، إيه اللي هيساعدك تفهم؟'},
+      {key:'doc_where',q:'أين يتم الحفظ والتخزين؟',hint:'فين بالظبط بيتحفظ التوثيق؟ لازم يكون محدد عشان أي حد يقدر يوصله مش بس أنت.'},
+      {key:'doc_when',q:'متى تتم مراجعة وتحديث الإجراء؟',hint:'امتى المفروض ترجع تشوف الـ SOP ده وتتأكد إنه لسه صح؟ الإجراءات اللي مش بتتراجع بتبقى قديمة.'},
+    ]
+  },
+];
+
+const CTX_OPTS = {
+'realestate': {
+'s_task':["تأهيل العملاء الواردين من Bayut وعقار ماب وOLX","تصفية وتقييم العملاء قبل إسنادهم للوكيل المناسب","إجراء مكالمة تأهيل أولى للتحقق من الجدية والميزانية","فرز الليدات الرقمية من حملات فيسبوك وجوجل","تحديد مستوى تأهيل العميل قبل حجز موعد معاينة"],
+'s_start':["وصول إشعار ليد جديد من Bayut أو عقار ماب أو OLX","تواصل العميل مع الوكيل مباشرة عبر واتساب أو اتصال","إرسال ليد من فريق التسويق الرقمي (فيسبوك / جوجل)","إحالة من عميل حالي أو شريك تجاري","تسجيل العميل في فعالية أو معرض عقاري"],
+'s_end':["تسجيل العميل كـ مؤهَّل أو غير مؤهَّل في CRM","حجز موعد معاينة للعميل المؤهَّل في أقرب وقت","أرشفة العميل غير المؤهَّل مع تسجيل سبب الرفض","إسناد العميل للوكيل المناسب وتحديث الـ Pipeline","إدراج العميل في مسار المتابعة التلقائي"],
+'s_included':["جميع الليدات الواردين من كل القنوات (بوابات، واتساب، إحالة)","مكالمة التأهيل الأولى وتأكيد الميزانية والجدية","إدخال البيانات في CRM وتقييم مستوى العميل","إسناد العميل للوكيل أو الفريق المناسب"],
+'s_excluded':["إجراءات المعاينة الميدانية (موثقة في SOP منفصل)","مرحلة تقديم العرض والتفاوض","أنشطة توليد الليدات والحملات التسويقية","إجراءات ما بعد البيع والتسليم"],
+'t_starts':["وصول إشعار ليد جديد في CRM من البوابة العقارية","رسالة واتساب أو اتصال من رقم غير محفوظ","إرسال الليد من فريق التسويق مع بيانات كاملة","إحالة نصية أو صوتية من عميل حالي","تسجيل العميل في فعالية عقارية أو معرض"],
+'t_signal':["إشعار CRM تلقائي من Bayut أو عقار ماب أو Property Finder","رسالة واتساب مباشرة على رقم الوكالة أو الوكيل","إيميل بتفاصيل العميل من فريق التسويق الرقمي","إحالة صوتية من عميل حالي عبر اتصال أو واتساب","نموذج تسجيل مكتمل من موقع الشركة أو صفحة هبوط"],
+'a_why':["منع إضاعة وقت الوكلاء مع عملاء غير مؤهَّلين","رفع معدل تحويل المعاينات إلى عقود مبرمة","الحفاظ على CRM نظيف ودقيق لتوقعات المبيعات","توفير تجربة احترافية للعميل منذ أول تواصل","تحقيق مستهدفات المبيعات الشهرية بكفاءة أعلى"],
+'a_outcome':["ارتفاع نسبة المعاينات مقابل الليدات الواردين فوق 40%","بيانات CRM دقيقة تدعم توقعات الإيرادات الشهرية","تقليص الوقت المهدر مع عملاء غير مؤهَّلين بنسبة 60%","تحسين تجربة العميل وانطباعه الأول عن الوكالة","رؤية واضحة للـ Pipeline أمام مدير المبيعات في أي وقت"],
+'n_accountable':["الوكيل العقاري المسؤول عن الليد في CRM","المشرف المباشر للوكيل","مدير الفرع المسؤول عن Pipeline الكامل","مسؤول CRM ومتابعة الليدات","مدير المبيعات الإقليمي"],
+'n_executes':["الوكيل العقاري المُسنَد للعميل","موظف الاستقبال أو المنسق (للمكالمة الأولى)","مسؤول CRM (لإدخال وتحديث البيانات)","وكيل عقاري مبتدئ تحت إشراف","ممثل تطوير الأعمال (للعملاء الرقميين)"],
+'n_approves':["مدير المبيعات (لقرارات إعادة توزيع الليدات)","المشرف الأول (للعملاء ذوي الميزانية العالية)","مدير الفرع (للعملاء VIP أو المستثمرين)","مسؤول CRM (لتحديثات حالة العميل النهائية)","مدير التسويق (لتقييم جودة مصادر الليدات)"],
+'n_informed':["فريق التسويق الرقمي (لتتبع جودة مصادر الليدات)","إدارة العمليات (لدقة بيانات CRM)","الإدارة المالية (لتخطيط العمولات)","مدير الوكالة (للعملاء VIP والاستثمارات الكبيرة)","باقي الوكلاء (عند إعادة توزيع الليد)"],
+'d_steps':["١. استلام الليد ← ٢. الاتصال خلال ٦٠ دقيقة (Golden Hour) ← ٣. مكالمة تأهيل (ميزانية، جدية، نوع العقار) ← ٤. تحديث CRM ← ٥. تصنيف: مؤهَّل/غير مؤهَّل/متابعة ← ٦. حجز معاينة أو أرشفة","استلام ← واتساب ترحيب ← اتصال خلال ساعة ← أسئلة BANT (ميزانية، سلطة، احتياج، توقيت) ← تحديث CRM ← إسناد للمرحلة التالية","راجع بيانات الليد ← تحقق من عدم التكرار ← اتصل ← اعمل مقابلة تأهيل ← حدّد مستوى الاهتمام ← اسند للـ Pipeline الصح","اتبع سكريبت التأهيل المكون من ٦ خطوات المعتمد من الإدارة"],
+'d_tools':["نظام CRM (Salesforce / HubSpot / Zoho / Propertybase)","بوابات Bayut وعقار ماب وOLX مصر وProperty Finder","واتساب بيزنس للتواصل مع العملاء","سكريبت التأهيل وقائمة الفحص (PDF أو Google Docs)","Google Sheets أو Excel لمتابعة الليدات اليومية"],
+'d_output':["سجل تأهيل مكتمل في CRM (الحالة، التقييم، الملاحظات)","موعد معاينة محجوز ومؤكَّد مع العميل المؤهَّل","سجل أرشفة مع سبب الرفض (للعميل غير المؤهَّل)","تقرير يومي للليدات مرسل لمدير الفرع","تحديث مرحلة Pipeline وتعيين اسم الوكيل المسؤول"],
+'ac_done':["سجل العميل في CRM مكتمل ١٠٠٪ بجميع الحقول المطلوبة","العميل مُصنَّف بشكل صحيح في CRM","الوكيل تواصل مع العميل خلال ساعة من الاستلام","الميزانية والجدية الزمنية موثقة في ملاحظات CRM","موعد المعاينة محجوز أو سبب الرفض مُسجَّل"],
+'ac_completion':["جميع حقول CRM المطلوبة مكتملة وتم تحديث الحالة","تم التواصل مع العميل مرة على الأقل وتوثيق النتيجة","للمؤهَّل: موعد المعاينة مؤكَّد كتابياً أو عبر واتساب","لغير المؤهَّل: السبب مُسجَّل والعميل مُؤرشَف","تم إخطار مدير الفرع للعملاء ذوي الأولوية أو VIP"],
+'ac_mustbe':["يجب التواصل مع كل عميل خلال ٦٠ دقيقة من الاستلام","يجب تحديث CRM في نفس يوم التواصل بدون تأخير","يجب توثيق تأكيد الميزانية قبل تصنيف العميل كمؤهَّل","لا يجوز أن يبقى أي عميل بدون تحديث لأكثر من ٢٤ ساعة","يجب تعيين اسم الوكيل كـ Owner للعميل في CRM"],
+'r_wrong':["العميل يعطي معلومات اتصال غير صحيحة أو لا يرد","ليد مكرر موجود في CRM تحت اسم وكيل آخر","العميل ليس هو صاحب القرار أو الميزانية الفعلية","العقارات المتاحة لا تتوافق مع طلب العميل","الوكيل لا يرد على العميل في الساعة الذهبية"],
+'r_exceptions':["إحالة مباشرة من VIP تستلزم تدخل مدير المبيعات","عميل أجنبي أو مستثمر خليجي يحتاج متخصصاً","نفس العميل تواصل مع أكثر من وكيل في نفس الوقت","عميل يطلب عقاراً خارج نطاق محفظة الشركة","عميل لغة غير عربية يحتاج دعماً متخصصاً"],
+'r_when':["وكيل لا يرد على العميل بعد ساعتين من الاستلام","عميل مؤهَّل يُعرب عن شكوى من مستوى الخدمة","نظام CRM معطّل وعدم إمكانية تسجيل البيانات","ليد مستثمر كبير بميزانية فوق ٥ مليون جنيه","تعارض في ملكية الليد بين أكثر من وكيل"],
+'r_whom':["مدير المبيعات لحالات الوكيل غير المتجاوب","المشرف الأول للعملاء ذوي الميزانية العالية","مسؤول CRM لمشاكل النظام أو تكرار البيانات","مدير الوكالة للشكاوى أو حالات VIP","مدير التسويق لأخطاء بيانات البوابات العقارية"],
+'doc_what':["جميع محاولات التواصل ونتائج المكالمات في CRM","ملاحظات مكالمة التأهيل (ميزانية، توقيت، نوع العقار)","تحديثات حالة العميل (مؤهَّل / غير مؤهَّل / متابعة)","سبب الرفض عند أرشفة العميل غير المؤهَّل","التقرير اليومي للليدات المرسل لمدير الفرع"],
+'doc_where':["نظام CRM (السجل الرئيسي لجميع بيانات العملاء)","Google Sheets أو Excel لمتابعة الليدات اليومية","أرشيف واتساب بيزنس لتاريخ المحادثات","التقرير الشهري في Google Drive أو SharePoint","صندوق الوارد للبريد الإلكتروني للعملاء البريديين"],
+'doc_when':["فور الانتهاء من كل تواصل مع عميل في نفس الجلسة","نهاية كل يوم عمل لملخص الليدات اليومي","شهرياً لمراجعة معدلات التحويل والـ Pipeline","عند إضافة قناة أو مصدر عملاء جديد","بعد أي مشكلة جوهرية أو شكوى من عميل"],
+},
+'medrep': {
+'s_task':["تنفيذ زيارة ترويجية منظمة للطبيب المستهدف","إجراء زيارات ميدانية منتظمة وفق خطة المنطقة الأسبوعية","تقديم الأدلة العلمية ومعلومات المنتج للأطباء","تحقيق مستهدفات تغطية الزيارات الشهرية في المنطقة","بناء علاقة مهنية مستدامة مع الأطباء المستهدفين"],
+'s_start':["اعتماد خطة المنطقة الأسبوعية من مدير المنطقة","تحديد قائمة الأطباء المستهدفين في Veeva أو CRM","إرسال جدول الزيارات اليومي من مدير المنطقة","تأكيد الطبيب على موعد الزيارة المُحجوزة","استكمال الزيارة السابقة والانتقال للطبيب التالي"],
+'s_end':["إتمام الزيارة وتسجيل تقرير DCR في Veeva أو CRM","رفع تقرير زيارة الطبيب (DCR) خلال ٢٤ ساعة","توثيق توزيع العينات وحصول المندوب على توقيع الطبيب","تسجيل التزامات الطبيب للمتابعة في النظام","تحديد تاريخ الزيارة القادمة وتسجيله في CRM"],
+'s_included':["جميع الزيارات المجدولة في خطة المنطقة الأسبوعية","إعداد وتقديم تقرير زيارة الطبيب (DCR)","توزيع العينات وتوثيق إيصال الاستلام","الترويج باستخدام CLM المعتمد من الشركة"],
+'s_excluded':["أنشطة قوائم المستشفيات والحسابات الكبرى (SOP منفصل)","تنفيذ برامج التعليم الطبي المستمر (CME)","إدارة الحسابات الرئيسية (Key Accounts)","الأنشطة التسويقية للمؤتمرات والمعارض"],
+'t_starts':["اعتماد المشرف على جدول الزيارات الأسبوعي","إنشاء قائمة الزيارات اليومية في Veeva أو CRM","إخطار من مدير المنطقة بأهداف الأسبوع","رد الطبيب بتأكيد موعد زيارة مُحجوزة","تعميم إطلاق منتج جديد يستوجب دورة زيارات"],
+'t_signal':["إشعار Veeva أو CRM بقائمة الزيارات اليومية","رسالة واتساب أو إيميل من مدير المنطقة","تذكير تقويم لموعد محجوز مسبقاً مع الطبيب","تعميم الشركة بإطلاق منتج يستوجب الزيارة","تقرير النقاط الشهري الذي يستلزم تحقيق هدف التغطية"],
+'a_why':["بناء علاقات مهنية قائمة على الثقة مع الأطباء","ضمان حصول الأطباء على معلومات علمية دقيقة ومحدّثة","تحريك نمو الوصفات الطبية للمنتجات في المنطقة","الالتزام بمعايير الترويج الطبي المعتمدة والرقابية","تحقيق المستهدفات الشهرية والربعية للمبيعات"],
+'a_outcome':["نمو وصفات الأطباء المستهدفين لمنتجات الشركة","تحقيق معدل تغطية زيارات لا يقل عن ٨٠٪ من قائمة الأطباء","تقديم DCRs في الوقت المحدد بدقة واكتمال","توزيع العينات ضمن الكوتا المعتمدة وتوثيقها كاملاً","تحسين ترتيب المندوب في تقرير الأداء الشهري"],
+'n_accountable':["المندوب الطبي (MR) المسؤول عن المنطقة","مدير المنطقة (ASM) المشرف على المندوب","المدير الإقليمي للأداء الكلي للمنطقة","مدير الحساب الرئيسي (KAM) للمستشفيات","مدير المقاطعة لمراجعات التغطية"],
+'n_executes':["المندوب الطبي المُعيَّن للمنطقة","المندوب الطبي الجديد تحت إشراف مباشر","مندوب متعاقد (عند وجود فجوة في المنطقة)","مندوب متخصص الصيدليات (لزيارات الصيدليات)","مندوب الحساب المستشفيات"],
+'n_approves':["مدير المنطقة يعتمد الخطة الأسبوعية وتقارير DCR","المدير الإقليمي يراجع الأداء الشهري للمنطقة","الشؤون الطبية تراجع أي نقاش علمي خارج CLM","مسؤول الامتثال يراجع استخدام مواد الترويج","مدير المبيعات الوطني يعتمد الخطوط المتخصصة"],
+'n_informed':["مدير المنطقة (جميع نتائج الزيارات يومياً)","فريق التسويق (ملاحظات الأطباء على المنتجات)","سلسلة الإمداد (استهلاك العينات واحتياجات التخزين)","الشؤون الطبية (أي حدث جانبي يبلغ عنه طبيب)","المالية (لحساب التقارير والحوافز)"],
+'d_steps':["١. مراجعة الخطة في Veeva ← ٢. تحضير CLM والعينات ← ٣. الوصول للعيادة ← ٤. الانتظار والتنسيق مع الاستقبال ← ٥. تقديم الديتيل للطبيب ← ٦. توزيع العينات مع الإيصال ← ٧. تسجيل DCR قبل مغادرة الموقع ← ٨. تحديد موعد الزيارة القادمة","قبل الزيارة: مراجع ملاحظات الزيارة الأخيرة ← وصول في الموعد ← ترحيب وبناء علاقة ← تقديم رسالة المنتج بالأدلة ← معالجة الاعتراضات ← الاتفاق على الالتزامات ← تسجيل DCR ← الإبلاغ عن أي ملاحظات غير عادية","اتبع نموذج الزيارة المكون من ٧ خطوات من الدليل الوطني للمبيعات"],
+'d_tools':["Veeva Vault أو CRM للقوى الميدانية","تابلت CLM مع العروض التقديمية المعتمدة","حقيبة العينات مع نماذج إيصال الاستلام","مطبوعات ترويجية ومراجع علمية معتمدة","تطبيق تقارير المصروفات (بدل التنقل والإقامة)"],
+'d_output':["تقرير زيارة الطبيب (DCR) مرفوع في Veeva في نفس اليوم","نموذج إيصال العينات موقَّع من الطبيب ومسحوب ورقمياً","نتيجة الزيارة وأي التزام من الطبيب موثق في CRM","موعد الزيارة القادمة مؤكَّد في CRM","ملخص تغطية الأسبوع مرسل لمدير المنطقة يوم الجمعة"],
+'ac_done':["DCR مرفوع خلال ٢٤ ساعة من الزيارة","جميع نقاط الديتيل المعتمدة في CLM قُدِّمت وسُجِّلت","نموذج إيصال العينات موقَّع من الطبيب ومُدرَج في النظام","نتيجة الزيارة وأي التزام من الطبيب موثق في CRM","موعد الزيارة القادمة مؤكَّد في CRM"],
+'ac_completion':["DCR مرفوع بجميع الحقول الإلزامية مكتملة","العينات الموزَّعة ضمن الكوتا المعتمدة وموثقة بالكامل","على الأقل رسالة منتج رئيسية واحدة مقدَّمة ومسجَّلة","لا توجد زيارة معلقة بدون نتيجة مسجَّلة لأكثر من ٢٤ ساعة","ملخص الأسبوع مرسل لمدير المنطقة كل جمعة"],
+'ac_mustbe':["يجب رفع DCR في نفس يوم الزيارة أو خلال ٢٤ ساعة","يجب أن يكون توقيع الطبيب على إيصال كل عينة موزَّعة","يجب استخدام CLM المعتمد في جميع عروض المنتج","لا يجوز تقديم أي معلومات خارج التسمية المعتمدة (Off-Label)","يجب أن تكون جميع مواد الترويج من الكيت التسويقي الرسمي"],
+'r_wrong':["الطبيب غير متاح أو في عملية جراحية يوم الزيارة","مخزون العينات ينفد قبل نهاية دورة الزيارات","المندوب يزور طبيباً خاطئاً أو عيادة خاطئة","تابلت CLM منخفض الشحن أو يعاني من عطل","نسيان الحصول على توقيع الطبيب على إيصال العينات"],
+'r_exceptions':["طبيب يطلب بيانات علمية خارج محتوى CLM ← تصعيد للشؤون الطبية","الإبلاغ عن حدث جانبي من طبيب ← تطبيق إجراء اليقظة الدوائية فوراً","طبيب يطلب فعالية CME أو برنامج متحدث","طبيب عالي الوصف يطلب إدراج المنتج في قائمة المستشفى","حالة طارئة في العيادة تمنع إتمام الزيارة الكاملة"],
+'r_when':["الإبلاغ عن حدث جانبي أو شكوى على منتج من طبيب","طلب يتجاوز صلاحيات المندوب أو مواد الترويج المتاحة","مخزون العينات يقل عن الحد الأدنى قبل موعد التوريد","نظام CRM معطّل وعدم إمكانية رفع DCRs في الوقت المحدد","مندوب يرصد منافساً يقدم ادعاءات مضللة أو خارج التسمية"],
+'r_whom':["مدير المنطقة لمشاكل الجدول وعطل CRM","الشؤون الطبية لأي سؤال علمي أو حدث جانبي","سلسلة الإمداد لنقص مخزون العينات أو التلف","مسؤول الامتثال لمخالفات الترويج","مدير المبيعات الوطني للمشاكل الاستراتيجية"],
+'doc_what':["تقارير زيارة الطبيب (DCRs) لكل زيارة منجزة","سجلات توزيع العينات مع توقيعات الأطباء","بيانات تغطية الزيارات الأسبوعية ومؤشرات الأداء","أي ملاحظات من الأطباء على المنتج أو المنافسين","تقارير الأحداث الجانبية أو الشكاوى على المنتج (يقظة دوائية)"],
+'doc_where':["Veeva Vault أو CRM (المصدر الرئيسي لجميع أنشطة الميدان)","نماذج إيصال العينات مسحوبة رقمياً في الشير درايف","التقرير الشهري للمنطقة في Google Drive أو إنترانت الشركة","تطبيق تقارير المصروفات للمطالبات المالية","بوابة الشؤون الطبية لتقارير اليقظة الدوائية"],
+'doc_when':["DCR يُرفَع في نفس يوم الزيارة أو خلال ٢٤ ساعة كحد أقصى","تقارير المصروفات تُرفَع أسبوعياً كل جمعة","تقرير تغطية المنطقة يُرفَع شهرياً لمدير المنطقة","مراجعة الـ SOP كل ٦ أشهر أو عند إطلاق منتج جديد","تحديث فوري عند صدور تعليمات رقابية أو إرشادات جديدة"],
+},
+'b2b': {
+'s_task':["تحديد وتأهيل العملاء المحتملين (B2B) وبناء Pipeline","تنفيذ تسلسل تواصل منظم لتحويل الليدات الباردة لدافئة","إجراء مكالمات اكتشاف وتأهيل مع متخذي القرار","بناء Pipeline مؤهَّل من القنوات الواردة والصادرة","تحويل الليدات المؤهَّلة من SDR لـ Account Executive"],
+'s_start':["تحديد حساب محتمل وإضافته لقائمة التواصل في CRM","فريق التسويق يسلّم ليد مؤهَّل (MQL) للمبيعات","SDR يستلم قائمة حسابات جديدة من مدير المبيعات","ليد وارد عبر موقع الشركة أو طلب عرض أسعار","إحالة من عميل حالي أو شريك تجاري"],
+'s_end':["العميل يوافق على اجتماع اكتشاف أو عرض تجريبي محجوز","العميل غير مؤهَّل ومُؤرشَف مع سبب في CRM","ليد يُسلَّم من SDR لـ AE مع كامل السياق والملاحظات","فرصة بيع تُنشَأ في CRM بمرحلة وقيمة وخطوة تالية","العميل يطلب عرضاً مالياً ← ينتقل لمرحلة الـ Proposal"],
+'s_included':["بحث وتقييم الحساب المحتمل (ICP Matching)","جميع محاولات التواصل (إيميل، لينكد إن، اتصال)","مكالمة التأهيل الأولى باستخدام BANT أو MEDDIC","تحديثات CRM في كل نقطة تواصل","تسليم الليد من SDR لـ AE مع ملاحظات السياق"],
+'s_excluded':["تقديم العرض التجريبي (Demo) — SOP خاص بـ AE","مرحلة التفاوض والعقود","إدارة الحسابات الحالية والتجديدات","تنفيذ حملات التسويق وتوليد الليدات"],
+'t_starts':["SDR يستلم حساباً جديداً أو ليد من قائمة الاستهداف","MQL يُسلَّم من التسويق بنقاط مؤهَّلة","ليد وارد عبر موقع الشركة أو نموذج طلب عرض","ليد يرد على تسلسل التواصل بإيجابية","مدير المبيعات يُسنِد قائمة حسابات استراتيجية جديدة"],
+'t_signal':["إشعار CRM بـ MQL جديد مُسنَد للـ SDR","رد إيجابي على إيميل التواصل أو رسالة لينكد إن","نموذج طلب عرض أسعار مكتمل عبر موقع الشركة","تعليق أو تفاعل مع محتوى الشركة على لينكد إن","إحالة واتساب أو إيميل من عميل أو شريك حالي"],
+'a_why':["بناء Pipeline تجاري منتظم وقابل للتوقع","تقليل وقت دورة المبيعات بالتأهيل المسبق","ضمان وصول AEs لفرص مؤهَّلة فقط","تتبع وتحسين معدلات تحويل أعلى المسار","توفير رؤية واضحة للإيرادات المتوقعة للإدارة"],
+'a_outcome':["X اجتماع اكتشاف / عرض تجريبي مؤهَّل شهرياً لكل SDR","Pipeline يعادل ٣-٤ أضعاف الهدف الربعي للإيرادات","معدل تحويل MQL لـ SQL فوق ٢٥٪","وصول AEs لحسابات مع كامل سياق الاكتشاف","بيانات CRM دقيقة تدعم تقارير توقع الإيرادات"],
+'n_accountable':["Account Executive (AE) المسؤول عن الفرصة والعلاقة","SDR أو BDR المالك لمرحلة التواصل والتأهيل","رئيس المبيعات أو VP of Sales لصحة الـ Pipeline","Revenue Operations Manager لعمليات CRM","مدير المبيعات لحصص وأهداف الفريق"],
+'n_executes':["SDR لتسلسلات التواصل الخارجي (Outbound)","BDR للحسابات الاستراتيجية والكبيرة","Inside Sales Rep لمتابعة الليدات الواردة (Inbound)","AE مبتدئ للشركات الصغيرة والمتوسطة","متخصص ما قبل البيع (Pre-Sales) للتأهيل التقني"],
+'n_approves':["مدير المبيعات للاستراتيجية على الحسابات الاستراتيجية","VP of Sales للمتابعة على الحسابات المؤسسية","القانوني والمالية لأي شروط غير معيارية","Solutions Engineer لاعتماد التأهيل التقني","التسويق لتفعيل حملات Account-Based Marketing"],
+'n_informed':["AE المستلِم للتسليم من SDR","فريق التسويق لتتبع تحويل MQL لـ SQL","RevOps أو مسؤول CRM لدقة بيانات الـ Pipeline","Customer Success للسياق المحتمل للـ Upsell","المالية لتوقع الإيرادات وحسابات العمولة"],
+'d_steps':["١. بحث الحساب (شركة، دور، نقطة ألم) ← ٢. إضافة لـ CRM بملف كامل ← ٣. تواصل مخصص (إيميل + لينكد إن) ← ٤. متابعة في اليوم ٣، ٧، ١٤ ← ٥. معالجة الرد ← ٦. مكالمة تأهيل (BANT) ← ٧. إذا مؤهَّل: إنشاء فرصة وتسليم لـ AE ← ٨. تحديث CRM في كل خطوة","ICP Check ← شخصنة رسالة التواصل الأولى ← تسلسل ٥ نقاط تواصل على أسبوعين ← اتصال في اليوم الخامس ← مكالمة تأهيل عند الاهتمام ← تقييم وتسليم أو رفض ← تحديث CRM","اتبع Sales Playbook: ٦ خطوات SDR مع بوابة تأهيل BANT قبل التسليم"],
+'d_tools':["CRM (Salesforce / HubSpot / Pipedrive) لجميع بيانات الحسابات","LinkedIn Sales Navigator للبحث والتواصل","أداة تسلسل التواصل (Apollo / Outreach / Instantly)","أدوات استخبارات الشركات (ZoomInfo / Crunchbase / LinkedIn)","أداة فيديو مخصصة (Vidyard / Loom) للتواصل الشخصي"],
+'d_output':["فرصة بيع مؤهَّلة في CRM بمرحلة وقيمة ARR وخطوة تالية","اجتماع اكتشاف أو عرض تجريبي محجوز في تقويم AE","ملف حساب كامل في CRM (قطاع، حجم، نقطة ألم، متخذو القرار)","ملاحظة تسليم SDR لـ AE مع السياق والمعلومات الرئيسية","ليدات مرفوضة مؤرشَفة في CRM مع سبب محدد"],
+'ac_done':["سجل الفرصة في CRM مكتمل بجميع الحقول الإلزامية","العميل المحتمل أكد اهتمامه وتم حجز اجتماع أو عرض","معايير BANT أو MEDDIC موثقة في ملاحظات CRM","ملاحظة تسليم SDR لـ AE مكتملة ومشاركة قبل الاجتماع","لا توجد ليدات بحالة (جديد) لأكثر من ٣ أيام عمل بدون إجراء"],
+'ac_completion':["اجتماع الاكتشاف أو العرض التجريبي مؤكَّد في التقويم","مرحلة الفرصة انتقلت من (تواصل) لـ (مؤهَّل) في CRM","تسليم SDR لـ AE مكتمل مع كامل السياق","جميع محاولات التواصل موثقة في CRM بتاريخ وقناة ونتيجة","معلومات اتصال متخذ القرار مؤكَّدة ومحفوظة"],
+'ac_mustbe':["كل حساب في التسلسل يجب أن يكون لديه سجل CRM قبل أول تواصل","معايير BANT يجب تأكيدها قبل تسليم الليد لـ AE","لا يجوز لـ AE استلام تسليم بدون ملاحظة SDR مكتملة","CRM يجب تحديثه خلال ٢٤ ساعة من أي تفاعل مع عميل محتمل","شخصنة التواصل يجب أن تُشير لشركة أو دور العميل المحتمل"],
+'r_wrong':["العميل المحتمل ليس صاحب القرار أو الميزانية الفعلية","ليد مكرر موجود بالفعل تحت مندوب أو فريق آخر","معلومات الاتصال قديمة أو العميل غيّر شركته","التواصل أُرسِل لشخص خاطئ (دور أو مستوى خاطئ)","ليد مُصنَّف كمؤهَّل دون تأكيد الميزانية أو الجدول الزمني"],
+'r_exceptions':["تهديد حساب منافس ← يتطلب Playbook خاص وتدخل AE أول","عميل في قائمة Do Not Contact ← تحقق من الامتثال قبل أي تواصل","قطاع منظَّم (مالية، صحة) ← مراجعة قانونية مطلوبة","ليد وارد من شركة Fortune 500 ← تصعيد فوري لفريق Enterprise","العميل مهتم لكن ليس هو الشخص الصحيح ← اطلب إحالة لمتخذ القرار"],
+'r_when':["حساب استراتيجي يستلزم تدخل مدير مبيعات أو VP","ليد مكرر موجود تحت ملكية مندوب آخر في CRM","العميل يطلب مراجعة قانونية لشروط أو وثائق امتثال","حجم الصفقة يتجاوز صلاحيات SDR للتأهيل المستقل","رد سلبي أو عدائي من عميل محتمل"],
+'r_whom':["مدير المبيعات لحجم الصفقة والحسابات الاستراتيجية","VP of Sales للحسابات المؤسسية والـ Named Accounts","القانوني والامتثال لأي قطاعات منظَّمة أو قوائم DNC","RevOps لتعارضات CRM وتكرار البيانات","التسويق لأخطاء تسجيل نقاط الـ MQL أو جودة الليدات"],
+'doc_what':["جميع محاولات التواصل بالقناة والتاريخ والنتيجة","ملاحظات مكالمة التأهيل مع إجابات BANT أو MEDDIC","ملاحظة تسليم SDR لـ AE مع كامل سياق الحساب","ليدات مرفوضة مؤرشَفة في CRM مع سبب محدد","تقرير الـ Pipeline الأسبوعي: # MQLs و SQLs والاجتماعات المحجوزة"],
+'doc_where':["CRM (Salesforce / HubSpot) كمصدر أساسي لجميع بيانات الحسابات","أداة تسلسل التواصل (Apollo / Outreach) لتاريخ التسلسلات","Google Docs أو Notion لملاحظة تسليم SDR لـ AE","شير درايف أو Notion لتقرير مراجعة الـ Pipeline الأسبوعي","أرشيف البريد الإلكتروني لجميع مراسلات العملاء المحتملين"],
+'doc_when':["CRM يُحدَّث خلال ٢٤ ساعة من كل تفاعل مع عميل محتمل","تقرير الـ Pipeline الأسبوعي يُقدَّم كل صباح اثنين","مراجعة شهرية لمعدلات تحويل التواصل مع مدير المبيعات","SOP يُراجَع ربعياً أو عند تغيير ICP أو عروض المنتج","SOP يُحدَّث عند دخول أسواق أو قطاعات جديدة"],
+},
+'corp_hr': {
+'s_task':["إدارة دورة التوظيف الكاملة للأدوار المعتمدة","البحث عن المرشحين وتقييمهم وتوظيفهم في المهلة المحددة","تنفيذ عملية التوظيف من نشر الوظيفة حتى توقيع عقد العمل","شغل المناصب الشاغرة بالمرشح الأنسب في الوقت المتفق عليه","اختيار وإلحاق أفضل مرشح بما يخدم احتياجات القسم"],
+'s_start':["استلام طلب توظيف معتمد (Headcount Request) من رئيس القسم","تأكيد المالية على الميزانية المخصصة للدور الجديد أو البديل","استلام خطاب استقالة أو قرار إنهاء خدمة يستلزم التعويض","اعتماد مجلس الإدارة على إنشاء منصب جديد","رئيس القسم يبادر بطلب توظيف عاجل نتيجة ضغط العمل"],
+'s_end':["المرشح يوقع عقد العمل ويؤكد تاريخ الالتحاق","سجل الموظف الجديد يُنشَأ في نظام HR ويُخطَر IT والإدارة","جميع المرشحين المرفوضين يُخطَرون بإيميل شكر ولياقة","قرار التوظيف موثق مع نماذج التقييم وملاحظات المقابلة","SOP التهيئة والإلحاق يُفعَّل في تاريخ الالتحاق المتفق عليه"],
+'s_included':["إعداد وصف الوظيفة واعتماده","نشر الوظيفة على جميع القنوات المناسبة (لينكد إن، Job Boards، داخلي)","فرز السير الذاتية والمقابلات وتقييم المرشحين","فحص المراجع والخلفيات للمرشح النهائي","إعداد عرض العمل والتفاوض والتوقيع"],
+'s_excluded':["أنشطة ما قبل اليوم الأول من الإلحاق (SOP الإلحاق منفصل)","إعداد البنية التحتية التقنية (IT) والمعدات","تسجيل الراتب والمزايا في الكشف","إدارة فترة الاختبار"],
+'t_starts':["استلام طلب توظيف معتمد عبر نظام HR أو نموذج الطلب","استلام خطاب الاستقالة وتأكيد قرار التعويض","المالية تُفرِج عن ميزانية التوظيف السنوي","مذكرة المنصب الجديد المعتمد من مجلس الإدارة تصل لـ HR","رئيس القسم يبادر بطلب توظيف عاجل نتيجة احتياج تشغيلي"],
+'t_signal':["إشعار نظام HR لطلب توظيف معتمد جديد","إيميل من رئيس القسم يؤكد الشاغر والمتطلبات","إيميل من المالية يؤكد اعتماد الميزانية للدور","محضر اجتماع مجلس الإدارة يوافق على إنشاء منصب","استقالة موظف تُخطَر بها HR وتستلزم التعويض الفوري"],
+'a_why':["ضمان شغل كل منصب شاغر بمرشح مؤهَّل في المهلة المتفق عليها","الحفاظ على استمرارية العمل وتقليل فترة الشغور","حماية الشركة من التوظيف الخاطئ عبر عملية اختيار منظَّمة","ضمان عملية توظيف عادلة وشفافة وخالية من التحيز","بناء القدرة التنظيمية المتوافقة مع استراتيجية الأعمال"],
+'a_outcome':["شغل المناصب الجونيور خلال ٣٠ يوماً والسينيور خلال ٦٠ يوماً","نقاط جودة المرشح فوق المعيار المحدد في نموذج التقييم","تقييم رضا مدير التوظيف ٤/٥ أو أعلى بعد التعيين","صفر مشاكل قانونية أو امتثالية مرتبطة بعملية التوظيف","جاهزية الإلحاق مؤكَّدة ٥ أيام عمل قبل تاريخ الالتحاق"],
+'n_accountable':["HR Business Partner أو مدير اكتساب المواهب","مدير الموارد البشرية للتوظيفات الاستراتيجية أو السينيور","مدير القسم الطالب كمالك مشترك للقرار","رئيس الموارد البشرية لاتساق المعايير التنظيمية","CHRO لتعيينات المستوى C وأعضاء مجلس الإدارة"],
+'n_executes':["المُجنِّد أو متخصص اكتساب المواهب للبحث والفرز","منسق HR لجدولة المقابلات واللوجستيات","مدير التوظيف لإجراء المقابلات التقنية أو الفنية","HR Generalist لإعداد عرض العمل وفحص المراجع","مساعد HR لإنشاء سجل الموظف في النظام والإلحاق"],
+'n_approves':["مدير التوظيف يعتمد اختيار المرشح النهائي","مدير HR يعتمد شروط العرض فوق النطاق المعياري","المالية تعتمد أي راتب فوق الميزانية المعتمدة","CEO أو COO يعتمدون جميع التعيينات من مستوى مدير فأعلى","القانوني يراجع عقود العمل غير المعيارية"],
+'n_informed':["المالية لتخطيط الرواتب والمزايا","IT لإعداد الوصول والأجهزة والبنية التحتية","الإدارة والمرافق لإعداد مكان العمل والمعدات","القانوني للعقود غير المعيارية أو قضايا الامتثال","جميع أعضاء لجنة المقابلة لنتيجة قرار الاختيار"],
+'d_steps':["١. استلام طلب التوظيف المعتمد ← ٢. إعداد/تحديث وصف الوظيفة ← ٣. النشر على القنوات ← ٤. فرز السير الذاتية (SLA 48 ساعة) ← ٥. مقابلة هاتفية للقائمة المختصرة ← ٦. مقابلات هيكلية ← ٧. نقاش اللجنة ← ٨. فحص المراجع للمرشح النهائي ← ٩. إصدار عرض العمل ← ١٠. تأكيد القبول ← ١١. تفعيل SOP الإلحاق","تأكيد الطلب ← استقطاب المرشحين (لينكد إن، ATS، إحالات) ← فرز الطلبات بنموذج تقييم ← مقابلة أولى (كفاءات) ← مقابلة ثانية (تقنية/فنية) ← مقابلة نهائية (ثقافة/قيادة) ← فحص مراجع ← عرض العمل ← قبول ← تأكيد تاريخ الالتحاق","اتبع Hiring Playbook: ١٠ خطوات من اعتماد JD حتى قبول العرض"],
+'d_tools':["ATS (Workable / Greenhouse / Taleo / SmartRecruiter)","LinkedIn Recruiter للاستقطاب النشط والسلبي","نظام HR (BambooHR / SAP SuccessFactors / HRMS) للسجلات والرواتب","Zoom أو Teams أو Google Meet للمقابلات عن بُعد","خدمة فحص الخلفيات (HireRight / مزود محلي)"],
+'d_output':["عرض عمل موقَّع وتاريخ الالتحاق مؤكَّد","نموذج تقييم مكتمل من جميع المحاورين لكل مرشح","سجل الموظف الجديد منشأ في نظام HR بالدور والقسم وتاريخ الالتحاق","إيميلات رفض مرسلة لجميع المرشحين غير الناجحين","قائمة تحقق الإلحاق مُفعَّلة في النظام أو أداة إدارة المشاريع"],
+'ac_done':["المرشح المختار اجتاز جميع مراحل المقابلات وحصل على تقييم فوق الحد الأدنى","فحص المراجع مكتمل بمرجعين مهنيين إيجابيين على الأقل","عرض العمل موقَّع ومُعاد خلال نافذة القبول المتفق عليها","جميع ملاحظات وتقييمات المقابلة محفوظة في ATS أو نظام HR","مدير التوظيف أكد رضاه عن قرار الاختيار"],
+'ac_completion':["عرض العمل مُوقَّع من المرشح والمفوَّض بالتوقيع","سجل الموظف الجديد منشأ ومؤكَّد من مسؤول HR","IT والإدارة تلقّوا إخطار الإلحاق مع تاريخ الالتحاق","جميع المرشحين المرفوضين أُخطِروا","ملف التوظيف مؤرشَف بجميع الوثائق المطلوبة"],
+'ac_mustbe':["جميع المرشحين يجب تقييمهم بنفس نموذج المقابلة الهيكلية","فحص المراجع يجب الانتهاء منه قبل إصدار عرض العمل","الراتب المعروض يجب أن يكون ضمن نطاق الميزانية المعتمدة أو مُصعَّد ومعتمد","لا يجوز تقديم عرض شفهي دون توافق HR ومدير التوظيف","عقد العمل يجب أن يتضمن جميع الشروط القانونية المطلوبة بالسياق المحلي"],
+'r_wrong':["مرشح مميز يقبل عرضاً من شركة منافسة أثناء عملية المقابلة","مدير التوظيف يغير متطلبات الوظيفة بعد بدء المقابلات","فحص الخلفية يكشف عن مشكلة غير واضحة وغير مؤهِّلة","المالية تجمّد ميزانية الدور بعد بدء العملية","المرشح يقبل العرض ثم يتراجع قبل تاريخ الالتحاق"],
+'r_exceptions':["تعيين عاجل بمهلة أسبوعين ← بروتوكول Fast-Track","مرشح داخلي (نقل أو ترقية) ← عملية معدَّلة وفق سياسة التنقل الداخلي","إعادة توظيف موظف سابق ← فحص سريع مع توثيق مسوّغ","دور يستلزم تصريح أمني ← عملية امتثال حكومية أو خاصة","توظيف جماعي (٥+ أدوار متطابقة) ← Assessment Center مطلوب"],
+'r_when':["مهلة شغل الدور لن تُحقَّق ضمن الـ SLA المتفق عليه","المرشح الأفضل يطلب شروطاً خارج نطاق التعويض المعتمد","فحص الخلفية يكشف عن نتيجة مثيرة للقلق وليست رافضة بوضوح","مدير التوظيف وHR يختلفان على المرشح النهائي","الميزانية المخصصة للدور يطعن فيها القسم المالي في المنتصف"],
+'r_whom':["مدير HR لاستثناءات التعويض والتعيينات الاستراتيجية","المدير المالي لنزاعات الميزانية والرواتب","المستشار القانوني لنتائج فحص الخلفية أو قضايا الامتثال","CHRO للقرارات الاستراتيجية والتعيينات التنفيذية","المدير الأعلى لمدير التوظيف عند خلافات الاختيار"],
+'doc_what':["طلب التوظيف المعتمد ووصف الوظيفة الموقَّع","جميع السير الذاتية ومواد الطلبات المستلمة","نماذج تقييم المقابلة من جميع المحاورين لكل مرشح","ملاحظات فحص المراجع ونتيجته للمرشح النهائي","عرض العمل الموقَّع وإيميل تأكيد القبول"],
+'doc_where':["ATS كمصدر أساسي لجميع بيانات المرشحين والمراحل","نظام HR لسجل الموظف الجديد بعد القبول","شير درايف HR لنماذج عروض العمل الموقَّعة","المالية لإعداد الرواتب وتسجيل المزايا","أرشيف إيميل الاستقطاب والمراسلات مع المرشحين"],
+'doc_when':["ATS يُحدَّث خلال ٢٤ ساعة من كل مقابلة أو تغيير في الحالة","عرض العمل يُصدَر خلال يومي عمل من قرار الاختيار النهائي","ملف التوظيف يُؤرشَف خلال ٥ أيام من شغل الدور","SOP يُراجَع كل ٦ أشهر أو بعد تدقيق توظيف","SOP يُحدَّث عند تغيير قانون العمل أو نطاقات التعويض أو أدوات العملية"],
+},
+'corp_fin': {
+'s_task':["تنفيذ عملية إقفال الشهر المحاسبي بالكامل في الموعد","إعداد ومراجعة وتقديم القوائم المالية في الموعد المحدد","تسوية جميع حسابات دفتر الأستاذ وحل الفروقات قبل الإقفال","إتمام دورة التقارير الشهرية (P&L وميزانية وتدفق نقدي)","ضمان ترحيل جميع قيود الفترة والمستحقات والمدفوعات المسبقة"],
+'s_start':["الوصول لتاريخ نهاية الشهر وفق تقويم الإقفال المالي","مدير المالية يُصدِر جدول الإقفال الرسمي مع المهل","النظام المالي يُقفِل الفترة السابقة تلقائياً في منتصف الليل","رؤساء الأقسام يُقدِّمون آخر الفواتير والمصروفات للفترة","إخطار المراجع الخارجي يستلزم التحضير للتقارير الرسمية"],
+'s_end':["القوائم المالية الموقَّعة توزَّع على الإدارة ومجلس الإدارة","ميزان المراجعة مُقفَل بدون بنود غير مسوَّاة","حزمة الحسابات الإدارية الشهرية تُرسَل لجميع أصحاب المصلحة","الفترة المحاسبية تُقفَل وتُحجَب رسمياً في النظام","المراجع الخارجي أو مجلس الإدارة يؤكد الاستلام والموافقة"],
+'s_included':["جميع قيود الدفتر الكبير للفترة","تسوية البنوك لجميع حسابات الشركة","مراجعة أعمار الدائنين والمدينين","قيد الرواتب والمستحقات للفترة","جري إهلاك الأصول الثابتة والتسوية"],
+'s_excluded':["المراجعة القانونية أو تقديم الحسابات السنوية (SOP منفصل)","تقديم الضرائب والامتثال التنظيمي","دورة الموازنة والتوقعات المالية","عملية اعتماد النفقات الرأسمالية"],
+'t_starts':["الوصول لتاريخ نهاية الشهر وفق التقويم المالي الرسمي","مدير المالية يُصدِر مذكرة الإقفال بالمهل الزمنية","النظام يُنشِّط تلقائياً قائمة مراجعة الإقفال في ERP","إخطار المراجعة الخارجية يستلزم تحضير فترة بعينها","موعد اجتماع مجلس الإدارة يتطلب تحضير الحزمة المالية"],
+'t_signal':["تذكير التقويم في آخر يوم عمل من الشهر","إيميل مدير المالية بجدول الإقفال والمواعيد","إشعار ERP بتفعيل قائمة مراجعة الإقفال التلقائية","إيميل المراجع الخارجي أو اللجنة المالية بالموعد","إشعار قناة المالية في Slack أو Teams لبدء الإقفال"],
+'a_why':["ضمان معلومات مالية دقيقة وموثوقة في الوقت المناسب لقرارات الإدارة","الوفاء بالالتزامات القانونية والتنظيمية لإعداد التقارير","تزويد مجلس الإدارة والمستثمرين برؤية حقيقية لأداء الشركة","تحديد وحل الفروقات قبل أن تتحول لمشاكل أكبر","تمكين الشركة من التوقع والموازنة والتخطيط ببيانات موثوقة"],
+'a_outcome':["قوائم مالية معدَّة ومعتمدة خلال ٥ أيام عمل من نهاية الشهر","ميزان مراجعة نظيف بدون بنود غير مسوَّاة عند الإقفال","حزمة حسابات إدارية موزَّعة لمجلس الإدارة والرؤساء في الموعد","معدل رفض استفسارات المراجعة أقل من ٥٪ نتيجة دقة السجلات","فريق المالية يحتفظ بسجلات نظيفة ومتوافقة وجاهزة للتدقيق"],
+'n_accountable':["مدير المالية أو المراقب المالي مالك عملية الإقفال","CFO أو رئيس المالية المُعتمِد النهائي للقوائم","مدير المجموعة المالية للتوحيد على مستوى المجموعة","VP المالية للمسؤولية الوظيفية","كبير المحاسبين كقائد عملية"],
+'n_executes':["كبير المحاسب أو محاسب الإدارة لإعداد القيود","مسؤول الحسابات الدائنة للتسوية والمستحقات","مسؤول الحسابات المدينة لمراجعة الأعمار والتسوية","محاسب الرواتب لقيد الرواتب والمستحقات","مساعد مالي أو محاسب لإدخال البيانات والترميز"],
+'n_approves':["مدير المالية يعتمد جميع القيود فوق الحد المعتمد","CFO يوقع على القوائم المالية قبل التوزيع","المراجعون الخارجيون للحسابات القانونية والسنوية","لجنة التدقيق في مجلس الإدارة للحسابات السنوية","المستشار الضريبي للمخصصات الضريبية الدورية"],
+'n_informed':["جميع رؤساء الأقسام (لمراجعة P&L لمراكز التكلفة)","CEO ومجلس الإدارة لتوزيع الحسابات الإدارية","المراجعون الخارجيون في حال وجود تعديل جوهري","المستثمرون والمساهمون للنتائج الربعية أو السنوية","الجهة التنظيمية (مصلحة الضرائب) للتقديم الدوري"],
+'d_steps':["١. تشغيل قائمة مراجعة ما قبل الإقفال (جميع الفواتير داخلة، القيود جاهزة) ← ٢. ترحيل القيود المتكررة (إهلاك، مستحقات، مدفوعات مسبقة) ← ٣. تسوية البنوك (جميع الحسابات) ← ٤. تسوية ما بين الشركات (إن وجد) ← ٥. مراجعة أعمار الدائنين والمدينين ← ٦. مراجعة ميزان المراجعة لأي شذوذ ← ٧. إعداد الحسابات الإدارية ← ٨. مراجعة مدير المالية ← ٩. اعتماد CFO ← ١٠. توزيع وإقفال الفترة","جمع جميع بيانات الفترة ← ترحيل المستحقات والتحويلات ← تسوية حسابات الميزانية ← تشغيل P&L والميزانية ← تحليل الفروق مقابل الموازنة ← مراجعة الإدارة ← توزيع مجلس الإدارة","اتبع قائمة مراجعة الإقفال الشهري: ١٥ خطوة بمسؤولين ومواعيد"],
+'d_tools':["نظام ERP أو المحاسبة (SAP / Oracle Financials / QuickBooks / Xero)","Excel أو Google Sheets لكراسات التسوية والحسابات الإدارية","بوابة البنك لتنزيل كشوف الحساب","نظام إدارة المصروفات (Concur / Expensify / أداة محلية)","أداة تقارير مجلس الإدارة (Board / Workiva / PowerPoint)"],
+'d_output':["قوائم P&L وميزانية وتدفق نقدي شهرية معتمدة","ميزان مراجعة موقَّع بجميع الحسابات المسوَّاة","حزمة الحسابات الإدارية موزَّعة على مجلس الإدارة والرؤساء","تقرير تحليل الفروق مقابل الموازنة الشهرية السابقة","تسويات بنوك لجميع حسابات الشركة"],
+'ac_done':["ميزان المراجعة يُظهِر صفر بنود غير مسوَّاة في جميع حسابات الميزانية","جميع القيود مُرحَّلة ومعتمدة من مدير المالية أو أعلى","تسوية البنوك مكتملة وموقَّعة لجميع الحسابات","الحسابات الإدارية مراجَعة وموقَّعة من CFO قبل التوزيع","جميع المستحقات والمدفوعات المسبقة مُرحَّلة وموثَّقة"],
+'ac_completion':["القوائم المالية موزَّعة على مجلس الإدارة خلال ٥ أيام عمل من نهاية الشهر","فترة المحاسبة مُقفَلة ومحجوبة بعد اعتماد CFO","جميع المستحقات والمدفوعات المسبقة مُرحَّلة وموثَّقة","تحليل الفروق مقابل الموازنة مدرَج في حزمة الحسابات الإدارية","جميع البنود المرفوضة أو المطعون فيها مُعالَجة وأُعيد تقديمها"],
+'ac_mustbe':["يجب اعتماد جميع القيود المزدوج (مُعِد ومراجِع)","يجب إتمام تسوية البنوك قبل إصدار القوائم المالية","لا يجوز إقفال أي فترة مع بنود تسوية غير مُعالَجة فوق حد الأهمية النسبية","يجب أن تتضمن الحسابات الإدارية تحليل فروق وسردية توضيحية","يجب نسخ احتياطي لجميع البيانات المالية قبل إقفال الفترة"],
+'r_wrong':["فاتورة أو مصروف مُقيَّد في فترة محاسبية خاطئة","فرق في تسوية البنوك لا يمكن حله قبل الموعد","رئيس قسم يُقدِّم مصروفات متأخرة بعد تاريخ قطع الإقفال","خطأ إدخال بيانات في ERP يسبب تكراراً أو ترحيلاً خاطئاً","قيد الرواتب متأخر بسبب تأخر بيانات مزود الرواتب"],
+'r_exceptions':["فاتورة مورد واردة متأخرة بعد إقفال الفترة ← تطبيق عملية المستحق وعكسه","حدث استثنائي كبير (إعادة هيكلة، انخفاض قيمة) ← مراجعة CFO والقانوني","اكتشاف خطأ في فترة سابقة بعد الإقفال ← عملية إعادة البيان وفق السياسة","هجرة نظام أو ترقية أثناء الإقفال ← إجراء إقفال يدوي","شذوذ في إعادة تقييم العملات الأجنبية ← توافق الخزينة وCFO"],
+'r_when':["حساب ميزانية يُظهِر فرقاً جوهرياً غير مفسَّر","بند تسوية غير مُعالَج يتجاوز حد الأهمية النسبية","الإقفال لا يمكن إتمامه بحلول اليوم الخامس بسبب بيانات ناقصة","خطأ مكتشَف في فترة سابقة يستلزم إعادة بيان","مراجع خارجي أو جهة رقابية يطلب وثائق عاجلة"],
+'r_whom':["CFO لأي تعديل جوهري أو سؤال سياسة محاسبية","المراجعون الخارجيون للتقارير النظامية واستفسارات الامتثال","المستشار الضريبي للمخصصات الضريبية الدورية والضرائب المؤجَّلة","المستشار القانوني للمخصصات المرتبطة بتقاضٍ أو مطالبات","لجنة التدقيق في مجلس الإدارة لأي بيانات خاطئة جوهرية أو مخاوف احتيال"],
+'doc_what':["ميزان المراجعة الموقَّع وجميع تسويات حسابات دفتر الأستاذ","جميع القيود مع اعتماد المُعِد والمراجِع","كشوف تسوية البنوك لجميع الحسابات","حزمة الحسابات الإدارية مع تحليل الفروق والسردية","قائمة مراجعة الإقفال مكتملة مع توقيع كل مسؤول على بنده"],
+'doc_where':["نظام ERP كمصدر أساسي لجميع القيود وبيانات دفتر الأستاذ","شير دراف المالية (Google Drive / SharePoint) لكراسات التسوية","بوابة مجلس الإدارة لحزم الحسابات الإدارية","نظام إدارة الوثائق لملفات المراجعة والمراسلات","نظام الرواتب لإعداد كشف الراتب وتسجيل المزايا"],
+'doc_when':["كل قيد يُوثَّق وقت الترحيل","التسويات مكتملة ومحفوظة خلال فترة الإقفال (يوم ٢-٣)","حزمة الحسابات الإدارية موزَّعة بحلول اليوم الخامس ومؤرشَفة فوراً","SOP يُراجَع كل ١٢ شهراً أو بعد تغيير ERP أو هيكل الحسابات","SOP يُحدَّث عند تغيير السياسة المحاسبية أو الهيكل التنظيمي أو أدوات التقارير"],
+},
+'book_pub': {
+'s_task':["مراجعة المخطوطة المقدَّمة وتقييمها للنشر","إدارة المسار التحريري والإنتاجي الكامل من المخطوطة للملف الجاهز","تطوير وإنتاج الكتاب عبر مسار التحرير والتصميم والإنتاج الكامل","إدارة التعاون بين المؤلف والناشر من التسليم حتى الموافقة النهائية","تسليم ملف طباعة نظيف أو ملف رقمي معتمد من المؤلف والناشر"],
+'s_start':["المؤلف يُسلِّم المخطوطة المكتملة للناشر بالصيغة المتفق عليها","الناشر يستلم المخطوطة ويسجلها في نظام تتبع المشاريع التحريرية","المحرر المسؤول يستلم المخطوطة المعتمدة للإنتاج","المؤلف والناشر يوقّعان عقد النشر ويُسدَّد المقدَّم","اجتماع الانطلاق يُعقَد بعد توقيع العقد ومع بدء جدول الإنتاج"],
+'s_end':["ملف الطباعة النهائي أو الرقمي معتمد من المؤلف والناشر","الـ ISBN مُسجَّل والبيانات الوصفية مُقدَّمة لقنوات التوزيع","جميع التخليصات الحقوقية والتراخيص مؤكَّدة وموثَّقة","ملف الإنتاج مُرسَل للمطبعة أو محمَّل على المنصة الرقمية","المؤلف يستلم نسخه وفق العقد والكتاب متاح للبيع"],
+'s_included':["المسار التحريري الكامل (تحرير هيكلي، تدقيق لغوي، مراجعة)","التصميم والإخراج الفني (غلاف وداخل الكتاب)","التواصل مع المؤلف وإدارة جولات المراجعة","تخليص الحقوق والتصاريح لجميع المحتوى المقتبَس","تسجيل الـ ISBN وإعداد البيانات الوصفية"],
+'s_excluded':["تسويق الكتاب والعلاقات العامة (SOP مستقل)","اللوجستيات والتوزيع والشحن","محاسبة الرواتب (Royalties) وحسابات المؤلف","ترخيص الحقوق الدولية والترجمة"],
+'t_starts':["المؤلف يُسلِّم المخطوطة النهائية للناشر","توقيع العقد وسداد مقدَّم المؤلف","القسم التحريري يستلم الموافقة للإنتاج من لجنة النشر","جدول الإنتاج مُؤكَّد وموعد الإصدار محجوز في التقويم","المحرر المكتسِب يُسلِّم المخطوطة لفريق الإنتاج"],
+'t_signal':["إيميل من المؤلف بملف المخطوطة مرفقاً","إيميل تأكيد توقيع العقد من الفريق القانوني","محضر اجتماع لجنة النشر يعتمد المخطوطة للإنتاج","دعوة تقويم لاجتماع الانطلاق بعد تنفيذ العقد","تسليم المخطوطة المراجَعة النهائية من المحرر المكتسِب للإنتاج"],
+'a_why':["ضمان صدور كل كتاب بمستوى تحريري وتصميمي يليق بسمعة دار النشر","إيصال الكتب للسوق في الموعد المحدد وضمن الميزانية","صون صوت المؤلف مع تحسين الوضوح والبنية والدقة","ضمان الوفاء بجميع المتطلبات القانونية والحقوقية وتسجيل الـ ISBN","بناء علاقة مهنية قائمة على الثقة مع كل مؤلف"],
+'a_outcome':["إنتاج الكتاب بالمعيار التحريري والتصميمي المتفق عليه","إتمام الإنتاج في الموعد أو قبله وضمن الميزانية","تقييم رضا المؤلف ٨/١٠ أو أعلى عن التجربة","صفر انتهاكات حقوقية أو مشاكل قانونية بعد النشر","الكتاب متاح في جميع قنوات البيع المتفق عليها يوم الإطلاق"],
+'n_accountable':["الناشر أو المدير التحريري مسؤول عن جودة وجدول الكتاب","محرر الاكتساب كمدير رئيسي لعلاقة المؤلف","المحرر التنفيذي أو المشرف للجدول الزمني والتنسيق","مدير الإنتاج لجاهزية الطباعة وإدارة الموردين","المدير التحريري للتوقيع النهائي على جميع الإصدارات"],
+'n_executes':["المحرر التطويري أو اللغوي لجميع مراحل التحرير","المدقق اللغوي لمراجعة دقة النص النهائية","المصمم الجرافيكي للغلاف والإخراج الداخلي","المؤلف (لجولات المراجعة والموافقة على المحتوى)","منسق الإنتاج لإدارة الملفات والتنسيق مع المطبعة"],
+'n_approves':["المدير التحريري يعتمد المخطوطة للإنتاج بعد توقيع المحرر","المؤلف يعتمد جميع تصحيحات التدقيق والتصاميم والإخراج النهائي","الناشر أو CEO يعتمد الغلاف والملف النهائي للطباعة","الفريق القانوني يعتمد جميع التخليصات الحقوقية والتراخيص","المالية تعتمد أي تجاوز لميزانية الإنتاج"],
+'n_informed':["المؤلف والوكيل الأدبي في كل معلم رئيسي","فريق المبيعات والتوزيع لتخطيط الإطلاق والبيانات الوصفية","شركاء التوزيع لإعداد العنوان وتواريخ الإتاحة","التسويق والعلاقات العامة لتخطيط الإطلاق","المالية لتتبع الميزانية وتسوية مقدَّم المؤلف"],
+'d_steps':["١. استلام المخطوطة ← ٢. تقرير التقييم التحريري ← ٣. التحرير الهيكلي (مراجعات المؤلف) ← ٤. التدقيق اللغوي ← ٥. مراجعة المؤلف على التدقيق ← ٦. إعداد البريف التصميمي ← ٧. الإخراج الداخلي (المصمم) ← ٨. تصميم الغلاف ← ٩. جولة تدقيق المؤلف والمحرر ← ١٠. التصحيحات النهائية ← ١١. مراجعة نهائية ← ١٢. موافقة المؤلف النهائية ← ١٣. إنشاء ملف الطباعة ← ١٤. تسجيل الـ ISBN وتقديم البيانات الوصفية ← ١٥. إرسال للمطبعة أو رفع على المنصة الرقمية","استلام مخطوطة ← تحرير تطويري ← مراجعات ← تدقيق لغوي ← تصميم ← إخراج ← تدقيق ← موافقة نهائية ← إنتاج ← توزيع","اتبع جدول الإنتاج الكامل (١٥ مرحلة من المخطوطة للملف الجاهز)"],
+'d_tools':["Microsoft Word أو Google Docs مع Track Changes للتحرير","Adobe InDesign للإخراج الداخلي والتصميم","Adobe Photoshop أو Illustrator لتصميم الغلاف","أداة فحص الانتحال (Copyscape / Turnitin)","أداة تتبع المشاريع التحريرية (Airtable / Notion / Asana)"],
+'d_output':["تقرير التقييم التحريري مُسلَّم للمؤلف","مخطوطة محرَّرة ومدقَّقة بالكامل بموافقة المؤلف والمحرر","ملف PDF جاهز للطباعة (داخل وغلاف) معتمد من المؤلف والناشر","تسجيل الـ ISBN مؤكَّد وتقديم البيانات الوصفية لنيلسن أو نظير محلي","أرشيف المشروع النهائي بجميع الملفات المصدرية والعقود والموافقات"],
+'ac_done':["المخطوطة اجتازت جميع مراحل التحرير بموافقة المؤلف والمحرر خطياً","الغلاف والإخراج الداخلي معتمدان خطياً من المؤلف والناشر","ملف الطباعة يستوفي المواصفات التقنية للمطبعة","الـ ISBN مُسجَّل وجميع البيانات الوصفية مُقدَّمة لقنوات التوزيع","جميع تخليصات الحقوق والتراخيص موثَّقة ومحفوظة"],
+'ac_completion':["المؤلف وقَّع على موافقة الإخراج النهائي خطياً","ملف الإنتاج مُرسَل للمطبعة أو محمَّل على المنصة الرقمية","نسخ المؤلف مؤكَّدة للتسليم قبل موعد الإطلاق العام","جميع الحقوق والتراخيص والوثائق الحقوقية محفوظة","ملف المشروع والأصول كاملاً مؤرشَفة في الشير دراف"],
+'ac_mustbe':["يجب حصول المؤلف على موافقة خطية قبل الإرسال للطباعة أو النشر الرقمي","يجب توثيق جميع الصور والاقتباسات والمحتوى المقتبَس من الغير","الـ ISBN يجب تسجيله قبل التوزيع","لا يجوز إرسال أي كتاب للطباعة بدون مراجعة نهائية كاملة","يجب قبول جميع التعديلات وعكس التغييرات قبل الإخراج"],
+'r_wrong':["المؤلف يُسلِّم مخطوطة أقصر أو أطول بكثير مما تم الاتفاق عليه","المصمم يُسيء تفسير البريف مما يستلزم إعادة تصميم كاملة","رفض حق استخدام صورة أو اقتباس لاكتشاف عدم التخليص","خطأ في ملف الطباعة مكتشَف بعد الاعتماد","المؤلف يطلب تغييرات جوهرية بعد اكتمال الإخراج"],
+'r_exceptions':["كتاب مشترك بجولات مراجعة متعددة ← عملية اعتماد معدَّلة","كتاب يحتوي محتوى حساساً يستلزم مراجعة قانونية قبل النشر","المؤلف لا يستجيب لطلبات المراجعة في الوقت المحدد","حقوق الترجمة مطلوبة قبل النشر في سوق بعينه","نشر مفتوح أو أكاديمي ← حقوق وتوزيع مختلفان"],
+'r_when':["المؤلف يتجاوز الموعد النهائي للمراجعة بأكثر من ٥ أيام عمل","اكتشاف خطر انتهاك حقوقي في محتوى المخطوطة","تجاوز تكاليف الإنتاج الميزانية المعتمدة بأكثر من ١٥٪","اكتشاف خطأ تقني في الطباعة بعد إرسال الملف","المؤلف يثير خلافاً على التعديلات التحريرية أو قرارات التصميم"],
+'r_whom':["المدير التحريري لتأخر المواعيد أو مشاكل علاقة المؤلف","المستشار القانوني لقضايا الحقوق والتراخيص والانتحال","المدير المالي لتجاوز الميزانية أو نزاعات العقد","مورد المطبعة لمشاكل الملف التقنية أو الإنتاج","محرر الاكتساب لتصعيد مشاكل تواصل المؤلف"],
+'doc_what':["عقد النشر الموقَّع وجميع ملاحقه","تقرير التقييم التحريري وملاحظات المراجعة من كل مرحلة","موافقات المؤلف الخطية على المخطوطة والتصميم والإخراج النهائي","تخليصات الحقوق والتراخيص لجميع المحتوى المقتبَس","شهادة تسجيل الـ ISBN وتأكيد تقديم البيانات الوصفية"],
+'doc_where':["نظام تتبع المشاريع التحريرية (Airtable / Notion) لجميع المراحل","شير دراف المشترك (Google Drive / Dropbox) لجميع نسخ المخطوطة وملفات التصميم","أرشيف العقود والقانونيات (فولدر مؤمَّن منفصل)","بوابة تسجيل الـ ISBN (نيلسن / مكتبة الإسكندرية / الجهة الوطنية المختصة)","النظام المالي لتتبع الميزانية وتسوية مقدَّم المؤلف"],
+'doc_when':["تسجيل نسخة المخطوطة فور الاستلام","تقرير التقييم التحريري يُسلَّم خلال ١٠ أيام عمل من استلام المخطوطة","موافقة المؤلف توثَّق خطياً في كل معلم رئيسي","SOP يُراجَع كل ١٢ شهراً أو بعد كل دورة إنتاج رئيسية","SOP يُحدَّث عند إضافة صيغ جديدة (صوتي، رقمي محسَّن، كتاب مصوَّر)"],
+},
+'ecom_cs': {
+'s_task':["الرد الاحترافي وحل استفسارات العملاء عبر جميع قنوات الدعم","معالجة طلبات الإرجاع والاسترداد وفق سياسة الشركة","معالجة مطالبات Chargeback والطلبيات التالفة أو الضائعة","إدارة الشكاوى المتكررة وتصعيدها للمستوى المناسب","متابعة ما بعد الشراء للحفاظ على رضا العملاء"],
+'s_start':["العميل يُرسِل استفساراً عبر الشات أو الإيميل أو الهاتف","الطلبية تُعلَّم كمتأخرة أو مفقودة أو تالفة في النظام","Chargeback أو نزاع مرفوع من العميل","العميل يترك تقييماً سلبياً أو يُصعِّد شكوى","طلب إرجاع مُقدَّم من العميل"],
+'s_end':["مشكلة العميل مُحلَّة ورضاه مؤكَّد","طلب الإرجاع مُعالَج والمبلغ مُستردَّ أو البديل مُرسَل","تذكرة الدعم مُغلَقة مع توثيق كامل للمشكلة والحل","Chargeback مُعالَج مع الموقف الموثَّق في النظام","استجواب ما بعد الشراء مُجرَى وبيانات الرضا مُسجَّلة"],
+'s_included':["جميع استفسارات وشكاوى العملاء عبر كل القنوات (شات، إيميل، هاتف، سوشيال)","معالجة طلبات الإرجاع والاسترداد وفق السياسة","إدارة Chargebacks والطلبيات التالفة أو الضائعة","الدعم في ما بعد الشراء والمتابعة"],
+'s_excluded':["إجراءات معالجة وشحن الطلبيات (SOP العمليات)","إدارة الكتالوج وإدراج المنتجات","التعامل مع شكاوى وسائل التواصل الاجتماعي (SOP مستقل)","برامج الولاء والاحتفاظ بالعملاء"],
+'t_starts':["العميل يُقدِّم شكوى أو استفساراً عبر أي قناة","الطلبية تُعلَّم تلقائياً كمتأخرة أو مشكلة في النظام","العميل يفتح شات مباشراً أو يتصل بخط الدعم","تقييم سلبي أو شكوى على سوشيال ميديا","طلب إرجاع مُقدَّم عبر البوابة الإلكترونية"],
+'t_signal':["تذكرة جديدة في نظام الدعم (Zendesk / Freshdesk / Gorgias)","تنبيه النظام لطلبية متأخرة أو مشكلة في الشحن","رسالة واتساب أو إيميل من عميل","إشعار تقييم سلبي على Google أو المنصة","طلب إرجاع محمَّل عبر بوابة المرتجعات"],
+'a_why':["ضمان حصول العملاء على دعم سريع واحترافي في كل تفاعل","تقليل معدل الإرجاع والـ Chargeback عبر معالجة استباقية","بناء ولاء العملاء واحتفاظهم من خلال تجربة دعم ممتازة","حماية سمعة العلامة التجارية والتقييمات الإيجابية","توفير بيانات جودة العمليات لتحسين مستمر"],
+'a_outcome':["تقييم رضا العملاء (CSAT) ٤.٥/٥ أو أعلى","الرد على ١٠٠٪ من التذاكر خلال SLA المحدد","تقليل معدل الإرجاع للمستوى المستهدف","معدل حل من أول اتصال (FCR) فوق ٧٥٪","تحسين تقييمات المتجر الإلكتروني وتقليل التقييمات السلبية"],
+'n_accountable':["مدير خدمة العملاء لجودة الأداء والـ SLA","رئيس تجربة العملاء لمعايير الدعم الكلية","مدير عمليات التجارة الإلكترونية للمشاكل التشغيلية","مسؤول نجاح العملاء لمتابعة العملاء ذوي القيمة العالية","المدير التنفيذي (للشكاوى الفيروسية أو العامة)"],
+'n_executes':["ممثل خدمة العملاء لجميع أنشطة الدعم","موظف الدعم عبر الشات المباشر","موظف معالجة المرتجعات","متخصص التصعيد (للحالات المعقدة)","خدمة العملاء في سوشيال ميديا"],
+'n_approves':["مدير خدمة العملاء لقرارات الاسترداد فوق الحد المعتمد","مدير العمليات لاستثناءات السياسة والحالات الخاصة","المالية للاستردادات الكبيرة أو الـ Chargebacks","المحامي أو الامتثال لقضايا الاحتيال أو النزاعات القانونية","الرئيس التنفيذي للشكاوى الفيروسية أو العامة"],
+'n_informed':["فريق المستودع أو التنفيذ لمشاكل الطلبيات","المالية لمعالجة الاستردادات","التسويق لإدارة التقييمات والسمعة","الفريق التقني لأخطاء المنصة أو الأعطال","الإدارة العليا للمشاكل أو الشكاوى المتكررة أو ذات التأثير الكبير"],
+'d_steps':["١. استلام استفسار العميل أو الشكوى ← ٢. التحقق من هوية العميل وتفاصيل الطلبية ← ٣. الفهم الكامل للمشكلة وتصنيفها ← ٤. البحث في النظام وتحديد السبب ← ٥. تقديم الحل أو التصعيد عند الاقتضاء ← ٦. التأكيد من رضا العميل ← ٧. إغلاق التذكرة مع توثيق كامل","تحقق ← صنّف ← أسرع في الرد (SLA) ← قيّم ← حلّ (استرداد / إرسال بديل / توضيح) ← أكّد الرضا ← وثّق وأغلق التذكرة","استلم ← اعتذر + أثبت تعاطفاً ← حقق في المشكلة ← قدم حلاً ← تابع للتأكد ← أغلق وقيّم"],
+'d_tools':["نظام الدعم (Zendesk / Freshdesk / Gorgias)","نظام إدارة الطلبيات (OMS) أو نظام التجارة الإلكترونية","CRM (Shopify / WooCommerce Backend)","الشات المباشر والواتساب وبوابة التواصل بالإيميل","منصة إدارة المرتجعات"],
+'d_output':["مشكلة العميل محلولة مع تأكيد رضاه","تذكرة دعم مغلقة مع توثيق المشكلة والحل والوقت المستغرق","استرداد مُنجَز أو بديل مُشحون وفق السياسة","تقرير التذاكر اليومي أو الأسبوعي مرفوع لمدير الخدمة","بيانات CSAT مسجَّلة لقياس الأداء وتحسينه"],
+'ac_done':["مشكلة العميل محلولة وتأكيد رضاه مُستلَم","التذكرة مغلقة مع توثيق كامل للمشكلة والحل والوقت المستغرق","الاسترداد منجَز أو البديل مشحون وفق السياسة","تقييم رضا العميل (CSAT) مكتمل ونتيجته إيجابية","جميع حالات الإرجاع والـ Chargeback موثَّقة بكامل الأدلة"],
+'ac_completion':["التذكرة مغلقة في نظام الدعم بدون طلبات مفتوحة للعميل","الاسترداد مُنجَز وظهر في كشف حساب العميل","العميل أكد الرضا عبر تقييم أو رسالة تأكيد","جميع الوثائق والأدلة محفوظة للرجوع إليها مستقبلاً","مدير الخدمة أُبلِغ للشكاوى ذات الأولوية أو VIP"],
+'ac_mustbe':["يجب الرد على ١٠٠٪ من التذاكر خلال SLA المحدد","يجب توثيق جميع الاستردادات والموافقات قبل المعالجة","لا يجوز إغلاق التذكرة قبل تأكيد رضا العميل","يجب الامتثال الكامل لسياسة الإرجاع والاسترداد المعتمدة","يجب الاحتفاظ بجميع الأدلة والمراسلات للـ Chargebacks"],
+'r_wrong':["بيانات الطلبية غير متطابقة بين الأنظمة","العميل يعطي عنوان إرجاع خاطئ","معالجة الاسترداد على حساب أو بطاقة خاطئة","وكيل يعطي معلومات خاطئة للعميل عن سياسة الإرجاع","تذكرة تبقى بدون حل تتجاوز الـ SLA"],
+'r_exceptions':["عميل VIP أو طلب كبير القيمة ← تعامل خاص ومنسَّق مع المدير","Chargeback احتيالي ← توثيق الأدلة وإخطار المالية والمزود","عميل عدائي أو مسيء ← بروتوكول التصعيد وفق سياسة الإدارة","شكوى على سوشيال ميديا ← تنسيق مع التسويق فوراً","عطل في المنصة يؤثر على عملاء كثيرين ← تصعيد جماعي"],
+'r_when':["الشكوى تتضمن تهديداً قانونياً أو إجراءً قانونياً","الاسترداد المطلوب يتجاوز الحد المعتمد للوكيل","العميل يُصعِّد عبر سوشيال ميديا أو يهدد بالتقييم السلبي","تذكرة بدون حل تتجاوز ضعفي مدة الـ SLA","مشكلة تكشف عن عيب في المنتج يؤثر على عملاء متعددين"],
+'r_whom':["مدير خدمة العملاء للاستردادات الكبيرة وقرارات الاستثناء","مدير العمليات لمشاكل الشحن والمستودع","المالية للـ Chargebacks الكبيرة ومخاوف الاحتيال","القانوني للنزاعات والتهديدات القانونية","الرئيس التنفيذي للشكاوى العامة أو الفيروسية"],
+'doc_what':["تفاصيل التذكرة الكاملة مع المشكلة والحل والوقت المستغرق","جميع المراسلات مع العميل عبر جميع القنوات","توثيق قرارات الاسترداد مع الموافقات والمبررات","أدلة وملفات الـ Chargeback","بيانات CSAT لكل تذكرة لقياس الأداء"],
+'doc_where':["نظام الدعم (Zendesk / Freshdesk) كمصدر أساسي","نظام إدارة الطلبيات (OMS) لسجلات الطلبيات والشحن","المالية ومزود الدفع لسجلات الاسترداد","أرشيف الإيميل ولوج الشات للمراسلات","تقرير الأداء الأسبوعي في شير دراف فريق الخدمة"],
+'doc_when':["التذاكر تُحدَّث في الوقت الفعلي أثناء كل تفاعل مع العميل","بيانات CSAT تُجمَع فور إغلاق كل تذكرة","تقرير الأداء الأسبوعي يُرفَع كل اثنين لمدير الخدمة","SOP يُراجَع ربعياً أو عند تغيير السياسة","SOP يُحدَّث عند تغيير منصة التجارة أو أدوات الدعم"],
+},
+};
+
+function getFallback(key,roleLabel,ctxLabel,taskName){
+  const t=taskName,r=roleLabel;
+  const map={
+    s_task:[`تنفيذ إجراء ${t} بالكامل`,`إدارة ${t} وفق المعيار المحدد`,`تشغيل ${t} بشكل منتظم`,`توثيق وتنفيذ ${t} بدون أخطاء`],
+    s_start:[`استلام طلب تشغيل ${t}`,`وصول طلب من الطرف المعني`,`اعتماد المشرف على البدء في ${t}`,`حلول الموعد المجدول`],
+    s_end:[`تسليم مخرج ${t} والتأكيد`,`اكتمال جميع خطوات ${t}`,`تحديث النظام وإغلاق السجل`,`استلام تأكيد الاكتمال من المسؤول`],
+    s_included:[`جميع خطوات ${t} من الاستلام للتسليم`,`التواصل مع الأطراف المعنية`,`التوثيق وحفظ السجلات في كل مرحلة`,`الفحوصات والموافقات المطلوبة`],
+    s_excluded:[`المهام التي تختص بها إدارات أخرى`,`الحالات الاستثنائية التي تحتاج موافقة أعلى`,`الإجراءات الموثقة في SOP منفصل`,`المواقف الطارئة خارج النطاق`],
+    t_starts:[`استلام طلب جديد لـ ${t}`,`تعليمات المشرف بالبدء`,`وصول حدث أو موعد مجدول`,`استيفاء الشروط السابقة للبدء`],
+    t_signal:[`رسالة واتساب أو إيميل بالطلب`,`إشعار النظام تلقائياً`,`اتصال تليفوني أو طلب شخصي`,`اعتماد من المسؤول السابق`],
+    a_why:[`ضمان تنفيذ ${t} بشكل متسق`,`تقليل الأخطاء في ${t}`,`توفير تجربة احترافية ومتوقعة`,`الالتزام بمعايير الجودة`],
+    a_outcome:[`إتمام ${t} بدقة في الموعد`,`رضا الأطراف المعنية عن النتيجة`,`بيانات محدثة ودقيقة في النظام`,`تقليل وقت الإشراف اليومي`],
+    n_accountable:[`مشرف ${r} المسؤول عن الفريق`,`مدير قسم ${r}`,`كبير المتخصصين في ${r}`,`صاحب العملية (Process Owner)`],
+    n_executes:[`موظف ${r} المكلف بالمهمة`,`متخصص أو فني ${r}`,`موظف مبتدئ تحت إشراف`,`أي موظف مؤهل ومدرب`],
+    n_approves:[`المشرف المباشر أو مدير الفريق`,`مدير الإدارة أو رئيس القسم`,`مسؤول الجودة أو الامتثال`,`الإدارة المالية للمبالغ فوق الحد`],
+    n_informed:[`جميع أفراد الفريق المشاركين`,`الإدارة العليا وأصحاب المصلحة`,`العميل أو الطرف الخارجي`,`الإدارة المالية للتوثيق`],
+    d_steps:[`١. استلم ← ٢. تحقق ← ٣. نفّذ ← ٤. راجع ← ٥. سلّم ← ٦. وثّق`,`استلام ← تحقق ← تنفيذ ← مراجعة ← اعتماد ← إغلاق`,`اتبع قائمة تدقيق ${t} من ٦ خطوات`,`اتبع الدليل التشغيلي المعتمد`],
+    d_tools:[`نظام CRM أو التشغيل الرئيسي`,`الإيميل وتطبيقات التواصل (واتساب)`,`Google Drive أو SharePoint`,`برنامج متخصص في المجال`],
+    d_output:[`سجل مكتمل في النظام`,`تسليم معتمد من الطرف المعني`,`تقرير مرسل للمسؤولين`,`تأكيد الاكتمال من العميل`],
+    ac_done:[`اكتمال جميع الخطوات بدون بنود مفتوحة`,`المخرج يستوفي معيار الجودة`,`الطرف المعني أكد رضاه`,`جميع المستندات مكتملة ومحفوظة`],
+    ac_completion:[`جميع بنود قائمة التدقيق مكتملة`,`الاعتماد أو التوقيع النهائي مستلَم`,`السجل في النظام مغلق ومحدّث`,`التسليم للطرف التالي مؤكَّد`],
+    ac_mustbe:[`صفر أخطاء في المخرج النهائي`,`جميع الموافقات المطلوبة اكتملت`,`الموعد النهائي ملتزَم به`,`الالتزام الكامل بالسياسات`],
+    r_wrong:[`معلومات ناقصة في مرحلة الاستلام`,`تأخير من طرف خارجي`,`عطل النظام أو مشكلة تقنية`,`غياب موظف أو ضغط على الطاقة`],
+    r_exceptions:[`طلب عاجل خارج التدفق المعتاد`,`تغيير المتطلبات في منتصف التنفيذ`,`استثناء امتثالي يحتاج مراجعة`,`حالة عالية القيمة تحتاج موافقة خاصة`],
+    r_when:[`احتمال تأخر الموعد النهائي`,`المشكلة تتجاوز صلاحيات المنفذ`,`يصعّد العميل شكوى`,`اكتشاف خطر امتثال أو قانوني`],
+    r_whom:[`المشرف المباشر أو مدير الفريق`,`مدير الإدارة أو رئيس القسم`,`المسؤول القانوني أو الامتثالي`,`الدعم التقني لأعطال الأنظمة`],
+    doc_what:[`سجل المهمة مع النتيجة والملاحظات`,`جميع المراسلات والموافقات`,`أي استثناءات أو تصعيدات`,`مؤشرات الأداء والوقت والجودة`],
+    doc_where:[`نظام CRM أو التشغيل الرئيسي`,`Google Drive أو SharePoint`,`أداة إدارة المشاريع`,`أرشيف البريد الإلكتروني`],
+    doc_when:[`فور اكتمال كل تنفيذ للإجراء`,`كل ٦ أشهر أو عند تغيير في العملية`,`بعد أي مشكلة أو تدقيق`,`عند إضافة أدوات أو أنظمة جديدة`],
+  };
+  return map[key]||[`خيار أ لـ ${t}`,`خيار ب لـ ${ctxLabel}`,`خيار ج وفق المعايير`,`خيار د وفق تفضيل الفريق`];
+}
+
+function getFieldOpts(key,ctxId,roleLabel,ctxLabel,taskName){
+  if(CTX_OPTS[ctxId]&&CTX_OPTS[ctxId][key]) return CTX_OPTS[ctxId][key];
+  return getFallback(key,roleLabel,ctxLabel,taskName);
+}
+
+
+/* ============ STATE FUNCTIONS ============ */
+let ST={
+  step:'role', role:null, ctx:null, task:null, secIdx:0,
+  answers:{},
+  visited:new Set()
+};
+function setState(patch){ST=Object.assign({},ST,patch);render();}
+function setAnswer(key,val){const a=Object.assign({},ST.answers);a[key]=val;ST=Object.assign({},ST,{answers:a});render();}
+function clearAnswer(key){const a=Object.assign({},ST.answers);delete a[key];ST=Object.assign({},ST,{answers:a});render();}
+function getAns(k){return(ST.answers[k]||'').trim();}
+
+function getSecProgress(sec){
+  const filled=sec.fields.filter(f=>ST.answers[f.key]&&ST.answers[f.key].trim()).length;
+  return{filled,total:sec.fields.length};
+}
+function totalFilled(){return SECTIONS.reduce((s,sec)=>s+getSecProgress(sec).filled,0);}
+function totalFields(){return SECTIONS.reduce((s,sec)=>s+sec.fields.length,0);}
+
+function goSec(idx){
+  const vis=new Set(ST.visited);vis.add(idx);
+  ST=Object.assign({},ST,{step:'section',secIdx:idx,visited:vis});
+  render();
+}
+
+
+function bc(){
+  const role=ROLES.find(r=>r.id===ST.role);if(!role)return'';
+  const ctx=ST.ctx?role.contexts.find(c=>c.id===ST.ctx):null;
+  let h='<div class="bc">';
+  h+=`<strong>${role.label}</strong>`;
+  if(ctx)h+=`<span class="bc-sep">›</span><strong>${ctx.label}</strong>`;
+  if(ST.task)h+=`<span class="bc-sep">›</span><strong>${ST.task}</strong>`;
+  return h+'</div>';
+}
+
+/* ============ PROGRESS BAR ============ */
+function progressBar(activeSec){
+  const filled=totalFilled(),total=totalFields();
+  const pct=total?Math.round(filled/total*100):0;
+  const dots=SECTIONS.map((sec,i)=>{
+    const p=getSecProgress(sec);
+    const cls=p.filled===0?'empty':p.filled===p.total?'full':'partial';
+    const active=(activeSec===i)?'active':'';
+    const cursor=ST.task?'style="cursor:pointer"':'';
+    return`<div class="prog-sec" ${ST.task?`onclick="goSec(${i})"`:''}  >
+      <div class="prog-dot ${cls} ${active}" style="${active&&activeSec!==undefined?`border-color:${SECTIONS[i].color};box-shadow:0 0 0 3px ${SECTIONS[i].color}33`:''}">${sec.letter}</div>
+      <div class="prog-sec-name">${sec.name.substring(0,4)}</div>
+    </div>`;
+  }).join('');
+  return`<div class="prog-wrap">
+    <div class="prog-label">
+      <span>تقدم ملء الـ SOP</span>
+      <span style="font-weight:800;color:#1a1a1a">${filled} / ${total} حقل (${pct}%)</span>
+    </div>
+    <div class="prog-sections">${dots}</div>
+  </div>`;
+}
+
+/* ============ RENDERS ============ */
+function roleStep(){
+  return`<p class="step-label">اختار وظيفتك أو مجال شغلك</p>
+  <div class="roles-grid">${ROLES.map(r=>`
+    <button class="role-card" onclick="setState({role:'${r.id}',step:'context'})">
+      <div class="role-accent" style="background:${r.color}"></div>
+      <div class="role-name">${r.label}</div>
+      <div class="role-sub">${r.sub}</div>
+    </button>`).join('')}</div>`;
+}
+function ctxStep(){
+  const role=ROLES.find(r=>r.id===ST.role);
+  return`<button class="back-btn" onclick="setState({step:'role',role:null})">← رجوع</button>
+  ${bc()}
+  <p class="step-label">اختار القطاع أو البيئة اللي بتشتغل فيها</p>
+  <div>${role.contexts.map(c=>`
+    <button class="list-btn" onclick="setState({ctx:'${c.id}',step:'task'})">
+      <span>${c.label}</span><span style="color:#bbb">←</span>
+    </button>`).join('')}</div>`;
+}
+function taskStep(){
+  const role=ROLES.find(r=>r.id===ST.role);
+  const ctx=role.contexts.find(c=>c.id===ST.ctx);
+  return`<button class="back-btn" onclick="setState({step:'context',ctx:null})">← رجوع</button>
+  ${bc()}
+  <p class="step-label">اختار الإجراء اللي عايز تعمله</p>
+  <div>
+    ${ctx.tasks.map(t=>`
+      <button class="task-btn" onclick="startTask('${t.replace(/'/g,"\\'")}')">
+        <div class="tdot" style="background:${role.color}"></div>
+        <span>${t}</span>
+      </button>`).join('')}
+    <div class="other-box">
+      <div class="other-lbl">الإجراء اللي محتاجه مش موجود؟ اكتبه هنا:</div>
+      <div class="other-row">
+        <button onclick="var v=document.getElementById('ot').value.trim();if(v)startTask(v);"
+          style="padding:9px 18px;background:${role.color};color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Cairo',sans-serif">
+          ابدأ ←
+        </button>
+        <input id="ot" type="text" class="other-inp" placeholder="مثال: متابعة العروض المرسلة، تسوية الخلافات..."
+          onkeydown="if(event.key===\\'Enter\\'){var v=this.value.trim();if(v)startTask(v);}"/>
+      </div>
+    </div>
+  </div>`;
+}
+
+function secStep(){
+  const sec=SECTIONS[ST.secIdx];
+  const aiBanner=`<div class="ai-banner done"><span class="ai-icon">✓</span><span>الخيارات محددة خصيصاً لـ <strong>${ST.task}</strong> في قطاع <strong>${ROLES.find(r=>r.id===ST.role)?.label||''}</strong> — اختر أو اكتب إجابتك الخاصة</span></div>`;
+
+  const progress=SECTIONS.map((_,i)=>`<div style="flex:1;height:4px;border-radius:2px;background:${i<=ST.secIdx?sec.color:'#e0deda'};transition:background .3s"></div>`).join('');
+
+  const fields=sec.fields.map(f=>{
+    const role2=ROLES.find(r=>r.id===ST.role);const ctx2=role2?role2.contexts.find(c=>c.id===ST.ctx):null;const opts=getFieldOpts(f.key,ST.ctx,role2?role2.label:'',ctx2?ctx2.label:'',ST.task||'');
+    const ans=ST.answers[f.key]||'';
+    const isFilled=!!ans.trim();
+    // Check if saved answer matches one of the current options
+    const matchedOpt=opts.find(o=>o===ans);
+    const isCustom=isFilled&&!matchedOpt;
+
+    const optHtml=opts.map(o=>{
+      const isSel=(o===ans);
+      const safe=o.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      return`<button class="opt${isSel?' sel':''}"
+        style="${isSel?`border-color:${sec.color};background:${sec.bg};color:${sec.color}`:''}"
+        onclick="setAnswer('${f.key}','${safe}');document.getElementById('ci_${f.key}').value='';">
+        <div class="opt-radio" style="${isSel?`background:${sec.color};border-color:${sec.color}`:''}">
+          <div class="dot"></div>
+        </div>
+        <span>${o}</span>
+      </button>`;
+    }).join('');
+
+    return`<div class="field-block">
+      <div class="field-hdr">
+        <div class="field-q">
+          ${f.q}
+          ${isFilled?`<span class="filled-badge" style="background:${sec.bg};color:${sec.color}">✓ مكتمل</span>`:`<span class="filled-badge" style="background:#fff8f0;color:#d09020">مطلوب</span>`}
+        </div>
+        <div class="field-hint">${f.hint}</div>
+      </div>
+      <div class="field-body">
+        <div class="opts-list">${optHtml}</div>
+        <div class="cust-div">أو اكتب إجابتك الخاصة</div>
+        <input id="ci_${f.key}" class="cust-in${isCustom?' filled':''}" type="text"
+          placeholder="اكتب هنا..."
+          value="${isCustom?ans.replace(/"/g,'&quot;'):''}"
+          oninput="if(this.value.trim()){setAnswer('${f.key}',this.value);}else{clearAnswer('${f.key}');}"/>
+        ${isCustom?`<div style="font-size:11px;color:${sec.color};margin-top:4px;font-weight:600">✓ إجابتك الخاصة: ${ans}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+
+  const isLast=ST.secIdx===SECTIONS.length-1;
+  const filled=totalFilled(),total=totalFields();
+
+  return`
+  <button class="back-btn" onclick="${ST.secIdx===0?"setState({step:'task'})":`goSec(${ST.secIdx}-1)`}">← رجوع</button>
+  ${bc()}
+  ${progressBar(ST.secIdx)}
+  ${aiBanner}
+  <div class="sec-explain" style="background:${sec.bg}18;border:1px solid ${sec.color}22">
+    <div class="sec-ex-top">
+      <div class="sec-letter" style="background:${sec.bg};color:${sec.color}">${sec.letter}</div>
+      <div>
+        <div class="sec-ex-name" style="color:${sec.color}">${sec.name}</div>
+        <div class="sec-ex-ename">${sec.ename} · قسم ${ST.secIdx+1} من ${SECTIONS.length}</div>
+      </div>
+      <div class="sec-count" style="background:${sec.bg};color:${sec.color}">${getSecProgress(sec).filled}/${sec.fields.length} مكتمل</div>
+    </div>
+    <div class="sec-ex-text" style="color:#444">${sec.explain}</div>
+  </div>
+  ${fields}
+  <div class="nav-row">
+    <button class="btn-back-s" onclick="${ST.secIdx===0?"setState({step:'task'})":`goSec(${ST.secIdx}-1)`}">← رجوع</button>
+    <button class="btn-next" style="background:${sec.color}" onclick="${isLast?"checkAndPreview()":`goSec(${ST.secIdx}+1)`}">
+      ${isLast?`معاينة وطباعة (${filled}/${total}) ←`:'القسم التالي ←'}
+    </button>
+  </div>`;
+}
+
+function getMissingFields(){
+  const missing=[];
+  SECTIONS.forEach((sec,si)=>{
+    sec.fields.forEach(f=>{
+      if(!ST.answers[f.key]||!ST.answers[f.key].trim()){
+        missing.push({secIdx:si,secName:sec.name,secLetter:sec.letter,secColor:sec.color,secBg:sec.bg,fieldKey:f.key,fieldQ:f.q});
+      }
+    });
+  });
+  return missing;
+}
+
+window.checkAndPreview=function(){
+  const missing=getMissingFields();
+  if(missing.length>0){setState({step:'missing'});}
+  else{setState({step:'preview'});}
+};
+
+function missingStep(){
+  const missing=getMissingFields();
+  const filled=totalFilled(),total=totalFields();
+  const items=missing.map(m=>`
+    <div class="missing-item">
+      <div class="missing-item-text">
+        <span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:${m.secBg};color:${m.secColor};font-weight:800;font-size:11px;text-align:center;line-height:22px;margin-left:6px;font-family:-apple-system,sans-serif">${m.secLetter}</span>
+        ${m.secName} — <strong>${m.fieldQ}</strong>
+      </div>
+      <button class="missing-item-btn" onclick="goSec(${m.secIdx})">اذهب للتعبئة ←</button>
+    </div>`).join('');
+  return`
+  ${bc()}
+  ${progressBar()}
+  <div class="missing-wrap">
+    <div class="missing-title">
+      <span>⚠</span>
+      <span>في ${missing.length} حقل فاضي — مكملتش الـ SOP كامل</span>
+    </div>
+    ${items}
+    <div class="missing-note">الحقول دي مهمة عشان الـ SOP يبقى مكتمل واحترافي. ممكن ترجع تعبئها أو تكمل للمعاينة بدونها.</div>
+  </div>
+  <div class="nav-row" style="flex-direction:row-reverse">
+    <button class="btn-next" style="background:#1560BD;flex:2" onclick="setState({step:'preview'})">معاينة على أي حال (${filled}/${total}) ←</button>
+    <button class="btn-back-s" style="flex:1" onclick="goSec(${SECTIONS.length-1})">← إكمال التعبئة</button>
+  </div>`;
+}
+
+function previewStep(){
+  const role=ROLES.find(r=>r.id===ST.role);
+  const ctx=role.contexts.find(c=>c.id===ST.ctx);
+  const filled=totalFilled(),total=totalFields();
+  const rows=SECTIONS.map(sec=>sec.fields.map((f,fi)=>{
+    const ans=ST.answers[f.key]||'';
+    const isEmpty=!ans.trim();
+    const lc=fi===0?`<td class="lc" rowspan="${sec.fields.length}" style="color:${sec.color};background:${sec.bg}">${sec.letter}</td>`:'';
+    const nc=fi===0?`<td class="nc" rowspan="${sec.fields.length}">${sec.name}</td>`:'';
+    const content=ans
+      ?`<span class="atag" style="background:${sec.bg};color:${sec.color}">${ans}</span>`
+      :`<span class="aempty">— غير مكتمل</span>`;
+    return`<tr class="${isEmpty?'empty-row':''}">${lc}${nc}<td>
+      <div class="ql">${f.q}</div>${content}
+    </td></tr>`;
+  }).join('')).join('');
+  return`
+  <div class="preview-bar no-print" style="flex-direction:row-reverse">
+    <div>
+      <button class="btn-edit-last" onclick="goSec(${SECTIONS.length-1})">← تعديل</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span style="font-size:12px;color:${filled===total?'#0a7a4e':'#8a4200'};font-weight:700">${filled}/${total} حقل مكتمل</span>
+      <button class="btn-print" style="background:${role.color}" onclick="doPrint()">طباعة / حفظ PDF</button>
+    </div>
+  </div>
+  ${progressBar()}
+  <div class="preview-bar">
+    <div class="preview-meta">
+      <h2>SOP — نموذج S.T.A.N.D.A.R.D.</h2>
+      <p>${role.label} · ${ctx.label} · ${ST.task}</p>
+    </div>
+  </div>
+  <div style="background:#fff;border:1px solid #e8e6e0;border-radius:12px;overflow:hidden">
+    <table class="ptbl">
+      <thead><tr><th style="width:34px"></th><th style="width:105px">القسم</th><th>التفاصيل</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+window.doPrint=function(){
+  const role=ROLES.find(r=>r.id===ST.role);
+  const ctx=role.contexts.find(c=>c.id===ST.ctx);
+  const bodyRows=SECTIONS.map(sec=>{
+    const cells=sec.fields.map(f=>{
+      const ans=ST.answers[f.key]||'';
+      return`<td style="border:0.5px solid #ccc;padding:5px 7px;vertical-align:top;text-align:right;direction:rtl">
+        <div style="font-size:7px;color:#aaa;font-weight:700;margin-bottom:3px;line-height:1.2">${f.q}</div>
+        <div style="font-size:9px;color:${ans?sec.color:'#ccc'};font-weight:${ans?'700':'400'};line-height:1.4">${ans||'— غير مكتمل'}</div>
+      </td>`;
+    }).join('');
+    return`<tr>
+      <td style="text-align:center;font-size:16px;font-weight:900;color:${sec.color};background:${sec.bg};border:0.5px solid #ccc;width:26px;padding:3px;font-family:-apple-system,sans-serif">${sec.letter}</td>
+      <td style="font-weight:800;font-size:8.5px;color:#333;background:#f9f8f5;border:0.5px solid #ccc;width:68px;padding:5px 6px;vertical-align:middle;text-align:right;direction:rtl">${sec.name}<br><span style="font-size:6.5px;color:#aaa;font-weight:400">${sec.ename}</span></td>
+      ${cells}
+    </tr>`;
+  }).join('');
+  const filled=totalFilled(),total=totalFields();
+  const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+<title>SOP — ${ST.task}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Cairo',sans-serif;direction:rtl;background:#fff}
+@page{size:A4 landscape;margin:.8cm}
+.wrap{padding:.4cm}
+.hdr{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:.4cm;border-bottom:2.5px solid #1a1a1a;padding-bottom:.25cm;direction:rtl}
+h1{font-size:13px;font-weight:800}.meta{font-size:8.5px;color:#888;margin-top:2px}
+.badge{font-size:7.5px;font-weight:700;color:#888;text-align:left}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead th{padding:4px 6px;background:#1a1a1a;color:#fff;font-size:7.5px;font-weight:800;text-align:right;border:0.5px solid #333;direction:rtl}
+</style></head><body>
+<div class="wrap">
+<div class="hdr">
+  <div><h1>SOP — نموذج S.T.A.N.D.A.R.D.</h1><div class="meta">${role.label} · ${ctx.label} · ${ST.task}</div><div class="meta" style="color:${filled===total?'#0a7a4e':'#b84a1a'};margin-top:2px;font-weight:700">${filled} من ${total} حقل مكتمل</div></div>
+  <div class="badge">Standard Operating Procedure<br>نموذج إجراءات التشغيل المعياري</div>
+</div>
+<table>
+<thead><tr><th style="width:26px"></th><th style="width:68px">القسم</th><th colspan="5">التفاصيل والإجابات</th></tr></thead>
+<tbody>${bodyRows}</tbody>
+</table>
+</div>
+<script>window.onload=function(){window.print();}<\/script>
+</body></html>`;
+  const w=window.open('','_blank');
+  if(w){w.document.write(html);w.document.close();}
+  else{alert('من فضلك اسمح بفتح النوافذ المنبثقة ثم اضغط طباعة مرة تانية');}
+};
+
+/* ============ MAIN ============ */
+window.setState=setState;window.setAnswer=setAnswer;window.clearAnswer=clearAnswer;
+window.goSec=goSec;window.checkAndPreview=checkAndPreview;
+window.startTask=function(t){ST=Object.assign({},ST,{task:t});goSec(0);};
+
+function render(){
+  const map={role:roleStep,context:ctxStep,task:taskStep,section:secStep,missing:missingStep,preview:previewStep};
+  document.getElementById('app').innerHTML=(map[ST.step]||roleStep)();
+}
+render();
+</script>
+</body>
+</html>
